@@ -2,152 +2,430 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Kauwe Bende · One Screen Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Kauwe Bende · Full Question Display</title>
+  <link rel="icon" href="crow.svg" type="image/svg+xml" />
+
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-    :root{--green:#092716;--green2:#143c24;--gold:#f7d44a;--ink:#102118;--shadow:0 12px 24px rgba(0,0,0,.25)}
-    html,body{width:100%;height:100%;overflow:hidden;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(145deg,#0b2b18,#06140d);color:white}
-    body{min-height:100dvh}
-    .game{width:min(430px,100vw);height:100dvh;margin:0 auto;padding:10px;display:grid;grid-template-rows:auto auto 1fr auto auto;gap:8px;overflow:hidden}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;font-size:1.55rem;flex-shrink:0}
-    .brand h1{font-size:clamp(1.4rem,7vw,2rem);line-height:1;white-space:nowrap}.brand p{color:rgba(255,255,255,.7);font-size:.78rem;font-weight:700;margin-top:2px}
-    .timer{background:#000;color:var(--gold);border-radius:999px;padding:9px 13px;font-weight:950;font-size:1.1rem;box-shadow:var(--shadow);white-space:nowrap}
-    .players-panel{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:10px;min-height:105px;max-height:118px;overflow:hidden;box-shadow:var(--shadow)}
-    .panel-title{display:flex;justify-content:space-between;align-items:center;font-size:.95rem;font-weight:950;margin-bottom:8px}.players{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-    .player{background:rgba(255,255,255,.94);color:var(--ink);border-radius:18px;min-height:68px;display:grid;place-items:center;padding:6px 4px;border:3px solid transparent;text-align:center}
-    .player.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(247,212,74,.28)}.avatar{font-size:1.35rem;line-height:1}.name{font-size:.74rem;font-weight:950;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .count{background:var(--green2);color:white;border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:950;line-height:1.25}
-    .question-card{min-height:0;background:linear-gradient(135deg,#fffdf2,#fff1af);color:var(--ink);border-radius:28px;border:5px solid var(--gold);box-shadow:var(--shadow);display:grid;place-items:center;text-align:center;padding:12px;overflow:hidden}
-    .question-inner{display:grid;place-items:center;gap:7px}.question-icon{font-size:clamp(2rem,10vw,3rem);line-height:1}.question-label{background:var(--green2);color:white;padding:6px 14px;border-radius:999px;font-size:.78rem;font-weight:950;max-width:100%}
-    .question-text{font-size:clamp(1.45rem,8vw,2.45rem);line-height:1.02;font-weight:1000;letter-spacing:-.06em;padding:0 4px}
-    .info-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:82px;max-height:90px}.info-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:8px;display:grid;place-items:center;text-align:center;overflow:hidden}
-    .info-card small{color:rgba(255,255,255,.65);font-weight:950;display:block;margin-bottom:4px;font-size:.72rem}.top-card{width:100%;max-width:110px;margin:0 auto;border-radius:16px;padding:6px;color:var(--ink);font-weight:950;font-size:.88rem;min-height:48px;display:grid;place-items:center;line-height:1.05}
-    .match-rule{color:var(--gold);font-size:1.25rem;font-weight:1000;line-height:1.05}
-    .hand-area{min-height:120px;max-height:142px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:9px;overflow:hidden}
-    .hand-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-weight:950;font-size:.9rem}.hand-header span:last-child{color:rgba(255,255,255,.7);font-size:.72rem;font-weight:800}
-    .cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;height:calc(100% - 28px)}
-    .card{border-radius:16px;border:2px solid transparent;border-bottom-width:5px;padding:5px;color:var(--ink);display:grid;grid-template-rows:auto auto 1fr;place-items:center;text-align:center;min-width:0;cursor:pointer;overflow:hidden}
-    .card.playable{outline:3px solid rgba(247,212,74,.78);border-color:white}.card.not-playable{opacity:.42;filter:grayscale(.3)}
-    .card-icon{font-size:1.35rem;line-height:1}.card-name{font-size:.56rem;font-weight:1000;letter-spacing:.04em;line-height:1}.card-text{font-size:.62rem;font-weight:900;line-height:1.05;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-    .card-yellow{background:#F7DC6F;border-bottom-color:#D4AC0D}.card-blue{background:#5DADE2;border-bottom-color:#2E86C1}.card-green{background:#A3E4A3;border-bottom-color:#2E7D32}.card-red{background:#E74C3C;border-bottom-color:#B03A2E;color:white}.card-dark{background:#2C3E50;border-bottom-color:#1A252F;color:white}
-    .controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;min-height:54px}.btn{border:0;border-radius:18px;font-weight:1000;cursor:pointer;background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.16);font-size:.95rem}.btn.main{background:var(--gold);color:var(--ink);box-shadow:0 10px 18px rgba(0,0,0,.25)}
-    .message{position:fixed;left:50%;bottom:68px;transform:translateX(-50%);width:min(390px,calc(100vw - 24px));background:rgba(0,0,0,.78);color:#fff2a2;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:10px 14px;text-align:center;font-size:.82rem;font-weight:850;z-index:20;pointer-events:none;opacity:0;transition:.2s}.message.show{opacity:1}
-    .sheet,.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:50;padding:14px}.sheet.show,.modal.show{display:grid;place-items:end center}.sheet-card,.modal-card{width:min(420px,100%);background:#102b1b;border:1px solid rgba(255,255,255,.14);border-radius:28px;padding:16px;color:white;box-shadow:var(--shadow)}
-    .modal.show{place-items:center}.modal-card{background:#fffaf0;color:var(--ink);border:5px solid var(--gold);text-align:center}.modal-icon{font-size:3.4rem}.modal-label{display:inline-block;background:var(--green2);color:white;padding:6px 14px;border-radius:999px;margin:8px 0;font-weight:950}
-    .modal-question{font-size:clamp(1.8rem,10vw,3rem);line-height:1.05;font-weight:1000;letter-spacing:-.06em;margin:8px 0 14px}.field{display:grid;gap:6px;margin:10px 0;color:rgba(255,255,255,.75);font-size:.8rem;font-weight:800}
-    input,select{width:100%;border:0;border-radius:14px;padding:12px;font-weight:800;outline:none}.sheet-actions,.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-    @media(max-height:720px){.game{gap:6px;padding:8px}.players-panel{min-height:94px;max-height:100px;padding:8px}.player{min-height:58px;border-radius:15px}.avatar{font-size:1.1rem}.question-text{font-size:clamp(1.25rem,7.2vw,2.05rem)}.info-row{min-height:72px;max-height:78px}.hand-area{min-height:104px;max-height:116px}.controls{min-height:48px}.logo{width:42px;height:42px}}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    :root {
+      --green: #153820;
+      --dark: #0b1f14;
+      --gold: #f7d44a;
+      --cream: #fff8e5;
+      --ink: #14221d;
+      --red: #e74c3c;
+      --blue: #5dade2;
+      --soft: rgba(255,255,255,0.14);
+      --shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, rgba(247,212,74,0.2), #07160f 90%),
+                  linear-gradient(145deg, #1a472a 0%, #07160f 100%);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 540px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0.55rem 0.65rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background: rgba(7, 22, 15, 0.8);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.4rem; }
+    .logo { width: 36px; height: 36px; border-radius: 12px; background: rgba(255,255,255,0.12); display: grid; place-items: center; font-size: 1.4rem; }
+    .brand h1 { font-size: 1rem; line-height: 1.1; }
+    .brand p { font-size: 0.6rem; color: rgba(255,255,255,0.7); }
+    .timer { background: #000000aa; color: var(--gold); padding: 0.35rem 0.8rem; border-radius: 2rem; font-weight: 900; font-size: 0.9rem; font-family: monospace; }
+
+    .section { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; padding: 0.5rem; backdrop-filter: blur(6px); flex-shrink: 0; }
+    .section-title { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .players-strip { display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: thin; padding-bottom: 0.2rem; }
+    .player-pill { flex: 0 0 auto; min-width: 70px; background: rgba(255,255,255,0.95); color: var(--ink); border-radius: 0.9rem; padding: 0.3rem 0.4rem; text-align: center; border: 2px solid transparent; }
+    .player-pill.active { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(247,212,74,0.5); }
+    .avatar { font-size: 1.1rem; }
+    .player-name { font-size: 0.65rem; font-weight: 800; }
+    .player-count { font-size: 0.6rem; background: var(--green); display: inline-block; padding: 0.1rem 0.45rem; border-radius: 1rem; color: white; }
+
+    /* MAIN QUESTION DISPLAY - BIG AND CLEAR */
+    .current-question-card {
+      background: linear-gradient(135deg, #fffdf0, #fff3be);
+      color: var(--ink);
+      border-radius: 1.2rem;
+      padding: 0.7rem;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      border: 3px solid rgba(247,212,74,0.9);
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+    .left-icon { font-size: 2.5rem; background: rgba(0,0,0,0.08); border-radius: 2rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+    .question-content { flex: 1; text-align: left; }
+    .current-label { font-size: 0.7rem; font-weight: 800; background: var(--green); display: inline-block; padding: 0.2rem 0.7rem; border-radius: 1rem; color: white; margin-bottom: 0.3rem; }
+    .current-question { font-size: 1rem; line-height: 1.35; font-weight: 800; word-break: break-word; white-space: normal; overflow: visible; }
+
+    .match-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0; }
+    .mini-card { background: rgba(0,0,0,0.4); border-radius: 1rem; padding: 0.35rem; text-align: center; }
+    .mini-title { font-size: 0.6rem; opacity: 0.8; font-weight: 700; }
+    .top-card-preview { background: white; border-radius: 0.8rem; padding: 0.3rem; font-size: 0.75rem; font-weight: 800; min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
+    .match-rule { font-size: 0.75rem; font-weight: 900; color: var(--gold); }
+
+    .message { background: rgba(0,0,0,0.7); border-radius: 1rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; font-weight: 700; text-align: center; flex-shrink: 0; }
+
+    .hand-section { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 0.2rem; }
+    .hand-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem; }
+    .hand-title { font-size: 0.8rem; font-weight: 900; }
+    .hand-subtitle { font-size: 0.6rem; color: rgba(255,255,255,0.8); }
+    .small-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 2rem; padding: 0.2rem 0.65rem; font-size: 0.65rem; font-weight: 800; color: white; cursor: pointer; }
+
+    .hand-scroll { display: flex; gap: 0.6rem; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; padding-bottom: 0.3rem; flex: 1; }
+    
+    /* CARD DESIGN - TALLER TO FIT FULL QUESTION TEXT */
+    .game-card { 
+      flex: 0 0 170px; 
+      scroll-snap-align: start; 
+      border-radius: 1rem; 
+      padding: 0.6rem 0.5rem; 
+      text-align: center; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 0.25rem; 
+      position: relative; 
+      border-bottom-width: 5px; 
+      border-bottom-style: solid; 
+      cursor: pointer; 
+      transition: transform 0.05s ease; 
+      height: 180px;
+      overflow-y: auto;
+    }
+    .game-card::-webkit-scrollbar { width: 2px; }
+    .game-card:active { transform: scale(0.97); }
+    .card-status { position: absolute; top: 0.2rem; right: 0.4rem; background: rgba(0,0,0,0.7); font-size: 0.55rem; padding: 0.1rem 0.4rem; border-radius: 1rem; font-weight: 800; color: white; }
+    .card-icon { font-size: 1.6rem; }
+    .card-name { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; }
+    .card-question { 
+      font-size: 0.72rem; 
+      font-weight: 700; 
+      line-height: 1.25; 
+      color: #1e2a1a; 
+      word-break: break-word;
+      white-space: normal;
+      margin-top: 0.2rem;
+      background: rgba(255,255,240,0.5);
+      padding: 0.25rem;
+      border-radius: 0.5rem;
+    }
+    .card-effect { font-size: 0.6rem; font-weight: 800; margin-top: 0.1rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 0.2rem; }
+    .card-yellow { background: #F7DC6F; border-bottom-color: #D4AC0D; color: #1e2a1a; }
+    .card-blue { background: #5DADE2; border-bottom-color: #2E86C1; color: #111; }
+    .card-green { background: #A3E4A3; border-bottom-color: #2E7D32; color: #111; }
+    .card-red { background: #E74C3C; border-bottom-color: #B03A2E; color: white; }
+    .card-dark { background: #2C3E50; border-bottom-color: #1A252F; color: white; }
+    .card-dark .card-question { color: #f0f0f0; background: rgba(0,0,0,0.3); }
+    .playable { outline: 3px solid var(--gold); filter: drop-shadow(0 2px 6px gold); }
+    .not-playable { opacity: 0.6; filter: grayscale(0.2); }
+
+    .bottom-controls { flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; padding: 0.4rem 0; }
+    .main-btn { border: 0; border-radius: 2rem; padding: 0.45rem 0.2rem; font-weight: 800; font-size: 0.75rem; background: var(--gold); color: var(--ink); cursor: pointer; }
+    .main-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* MODAL - BIGGER QUESTION DISPLAY */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal.show { display: flex; }
+    .modal-card { width: 90%; max-width: 380px; background: #fffef7; border-radius: 2rem; padding: 1.5rem; text-align: center; border: 4px solid var(--gold); }
+    .modal-icon { font-size: 3rem; }
+    .modal-label { background: var(--green); color: white; display: inline-block; padding: 0.3rem 1rem; border-radius: 2rem; font-weight: 800; font-size: 0.75rem; margin: 0.5rem 0; }
+    .modal-question { font-size: 1.4rem; font-weight: 900; margin: 1rem 0; line-height: 1.4; word-break: break-word; }
+    .modal-actions { display: flex; gap: 0.6rem; justify-content: center; margin-top: 1rem; }
+
+    .settings-sheet { position: fixed; left: 0; right: 0; bottom: 0; background: #0f2a1c; border-radius: 1.2rem 1.2rem 0 0; padding: 0.8rem; transform: translateY(105%); transition: 0.2s; z-index: 90; border-top: 1px solid gold; }
+    .settings-sheet.show { transform: translateY(0); }
+    .field { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.7rem; font-size: 0.7rem; font-weight: 800; }
+    input, select { padding: 0.5rem; border-radius: 1rem; border: none; font-weight: 700; }
   </style>
 </head>
 <body>
-  <main class="game">
-    <header class="topbar">
-      <div class="brand"><div class="logo">🐦‍⬛</div><div><h1>Kauwe Bende</h1><p>One Screen Mobile</p></div></div>
-      <div class="timer" id="timer">20:00</div>
-    </header>
+<div class="app">
+  <div class="top-bar">
+    <div class="brand"><div class="logo">🐦‍⬛</div><div><h1>Kauwe Bende</h1><p>Questions visible</p></div></div>
+    <div class="timer" id="timer">20:00</div>
+  </div>
 
-    <section class="players-panel">
-      <div class="panel-title"><span>👥 Players</span><span id="directionLabel">↪</span></div>
-      <div class="players" id="playersGrid"></div>
-    </section>
+  <div class="section">
+    <div class="section-title"><span>👥 Players</span><span id="directionLabel">↪</span></div>
+    <div class="players-strip" id="playersGrid"></div>
+  </div>
 
-    <section class="question-card">
-      <div class="question-inner">
-        <div class="question-icon" id="questionIcon">🎴</div>
-        <div class="question-label" id="questionLabel">Current Question</div>
-        <div class="question-text" id="questionText">Tap a playable card to begin.</div>
-      </div>
-    </section>
-
-    <section class="info-row">
-      <div class="info-card"><div><small>TOP CARD</small><div class="top-card" id="topCard">—</div></div></div>
-      <div class="info-card"><div><small>MATCH</small><div class="match-rule" id="matchRule">ANY</div></div></div>
-    </section>
-
-    <section class="hand-area">
-      <div class="hand-header"><span>🎴 Your Cards</span><span id="handInfo">0 playable</span></div>
-      <div class="cards" id="cardsContainer"></div>
-    </section>
-
-    <nav class="controls">
-      <button class="btn" onclick="toggleSetup()">⚙️ Setup</button>
-      <button class="btn main" onclick="drawAndEnd()">Draw</button>
-      <button class="btn" onclick="showBigQuestion()">🔎 Big</button>
-    </nav>
-  </main>
-
-  <div class="message" id="message"></div>
-
-  <div class="sheet" id="setupSheet" onclick="closeSetupOutside(event)">
-    <div class="sheet-card">
-      <h2>⚙️ Setup</h2>
-      <label class="field">Round length
-        <select id="timerSelect" onchange="setRoundLength()">
-          <option value="600">10 minutes</option><option value="900">15 minutes</option><option value="1200" selected>20 minutes</option><option value="1800">30 minutes</option>
-        </select>
-      </label>
-      <label class="field">Player names, separated by comma
-        <input id="playerNamesInput" value="You, Player 2, Player 3, Player 4">
-      </label>
-      <div class="sheet-actions"><button class="btn main" onclick="applyPlayers()">Apply</button><button class="btn" onclick="restartGame()">Restart</button></div>
-      <div class="sheet-actions"><button class="btn" id="voiceBtn" onclick="toggleVoice()">🔇 Voice OFF</button><button class="btn" id="countBtn" onclick="toggleCountdown()">⏱ Count ON</button></div>
-      <div class="sheet-actions"><button class="btn" onclick="toggleSetup()">Close</button><button class="btn" onclick="sortHand()">Sort Cards</button></div>
+  <!-- MAIN QUESTION AREA - FULL TEXT ALWAYS VISIBLE -->
+  <div class="current-question-card" id="currentCardArea">
+    <div class="left-icon" id="currentIcon">🎴</div>
+    <div class="question-content">
+      <div class="current-label" id="currentLabel">Current Question</div>
+      <div class="current-question" id="currentQuestion">Play a question card to see it here ✨</div>
     </div>
   </div>
 
-  <div class="modal" id="questionModal" onclick="closeModalOutside(event)">
-    <div class="modal-card">
-      <div class="modal-icon" id="modalIcon">🎴</div>
-      <div class="modal-label" id="modalLabel">Question</div>
-      <div class="modal-question" id="modalQuestion">Question appears here.</div>
-      <div class="modal-actions"><button class="btn" onclick="repeatSpeech()">🔊 Listen</button><button class="btn main" onclick="hideModal()">Continue</button></div>
-    </div>
+  <div class="match-row">
+    <div class="mini-card"><div class="mini-title">TOP CARD</div><div class="top-card-preview" id="topCardPreview">—</div></div>
+    <div class="mini-card"><div class="mini-title">MATCH</div><div class="match-rule" id="matchRule">color / icon</div></div>
   </div>
 
-  <script>
-    const ICONS=['🥚','🐦‍⬛','🪶','🪵'],ICON_NAMES=['Egg','Crow','Feather','Stick'],AVATARS=['🧑','🦊','🐸','🐻','🐼','🦉'];
-    const questions={positive:["What made you smile today?","Who inspires you the most?","What are you grateful for right now?","What is something good that happened this week?","Who makes you laugh the most?"],future:["What does your perfect normal day look like?","What dream are you working toward?","Where do you see yourself in five years?","What new skill would you love to learn?","What place do you really want to visit?"],reflective:["What would you tell your younger self?","What challenge made you stronger?","What are you genuinely proud of?","What mistake taught you something valuable?","What is the best advice you received?"],competitive:["What are you weirdly good at?","What hidden talent do you have?","What game do you almost always win?","What could you teach others?","What is your personal superpower?"]};
-    const cardTypes={positive:{name:"POSITIVE",color:"yellow",bgClass:"card-yellow"},future:{name:"FUTURE",color:"blue",bgClass:"card-blue"},reflective:{name:"REFLECTIVE",color:"green",bgClass:"card-green"},competitive:{name:"COMPETITIVE",color:"red",bgClass:"card-red"},plus2:{name:"+2",color:"dark",bgClass:"card-dark",action:"plus2",effect:"Draw 2 + skip"},skip:{name:"SKIP",color:"dark",bgClass:"card-dark",action:"skip",effect:"Skip next player"},reverse:{name:"REVERSE",color:"dark",bgClass:"card-dark",action:"reverse",effect:"Reverse direction"}};
-    let deck=[],players=[],currentPlayerIndex=0,direction=1,currentTopCard=null,timeLeft=1200,timer=null,gameActive=true,readingDelay=false,lastQuestion=null,voiceEnabled=false,countdownEnabled=true;
+  <div class="message" id="messageArea">💡 Tap a highlighted (gold border) card to play it</div>
 
-    function randomIcon(){const i=Math.floor(Math.random()*ICONS.length);return{symbol:ICONS[i],name:ICON_NAMES[i]}}
-    function createCard(t){const icon=randomIcon();return{...t,iconSymbol:icon.symbol,iconName:icon.name}}
-    function buildDeck(){const d=[];Object.keys(questions).forEach(cat=>questions[cat].forEach(question=>d.push(createCard({...cardTypes[cat],type:cat,question}))));for(let i=0;i<2;i++){d.push(createCard({...cardTypes.plus2,type:"plus2"}));d.push(createCard({...cardTypes.skip,type:"skip"}));d.push(createCard({...cardTypes.reverse,type:"reverse"}))}return d.sort(()=>Math.random()-.5)}
-    function canPlay(card){if(!gameActive||readingDelay||currentPlayerIndex!==0)return false;if(!currentTopCard)return true;return card.color===currentTopCard.color||card.iconSymbol===currentTopCard.iconSymbol}
-    function playCard(index){if(!gameActive||readingDelay)return;if(currentPlayerIndex!==0){showMessage("Wait for your turn.");return}const card=players[0].hand[index];if(!canPlay(card)){showMessage("Match color or icon.");return}players[0].hand.splice(index,1);handleCard(card,0);if(players[0].hand.length===0){endGame("🏆 You won!");return}if(card.question){startQuestionDelay();return}nextTurn();render()}
-    function handleCard(card,playerIndex){playSound(card.action?"action":"card");currentTopCard={name:card.name,color:card.color,iconSymbol:card.iconSymbol,iconName:card.iconName,question:card.question||null};if(card.question){lastQuestion=card;setQuestion(card);showModal(card)}else setAction(card);if(card.action==="plus2"){const target=getNextIndex();drawCards(target,2);currentPlayerIndex=target;showMessage(`${players[target].name} draws 2 and skips.`);nextTurn()}if(card.action==="skip"){const skipped=getNextIndex();currentPlayerIndex=skipped;showMessage(`${players[skipped].name} skipped.`);nextTurn()}if(card.action==="reverse"){direction*=-1;showMessage("Direction reversed.")}}
-    function setQuestion(card){questionIcon.textContent=card.iconSymbol;questionLabel.textContent=`${card.name} · ${card.iconName}`;questionText.textContent=card.question}
-    function setAction(card){questionIcon.textContent=card.iconSymbol;questionLabel.textContent=`${card.name} · Action`;questionText.textContent=card.effect||"Action card played."}
-    function startQuestionDelay(){readingDelay=true;showMessage("Question time: 10 seconds.");render();setTimeout(()=>{if(gameActive)startCountdown()},10000)}
-    function startCountdown(){if(!countdownEnabled){readingDelay=false;nextTurn();render();return}showMessage("Next player in 3...");speakCountdown("3");setTimeout(()=>{if(gameActive){showMessage("Next player in 2...");speakCountdown("2")}},1000);setTimeout(()=>{if(gameActive){showMessage("Next player in 1...");speakCountdown("1")}},2000);setTimeout(()=>{if(gameActive){readingDelay=false;nextTurn();render()}},3000)}
-    function aiTurn(){if(!gameActive||currentPlayerIndex===0)return;const ai=players[currentPlayerIndex];const playableIndex=ai.hand.findIndex(c=>c.color===currentTopCard.color||c.iconSymbol===currentTopCard.iconSymbol);if(playableIndex>=0){const card=ai.hand.splice(playableIndex,1)[0];handleCard(card,currentPlayerIndex);if(ai.hand.length===0){endGame(`${ai.name} won!`);return}if(card.question){startQuestionDelay();return}}else{drawCards(currentPlayerIndex,1);playSound("draw");showMessage(`${ai.name} drew a card.`)}nextTurn();render()}
-    function getNextIndex(){return(currentPlayerIndex+direction+players.length)%players.length}
-    function nextTurn(){currentPlayerIndex=getNextIndex();render();if(currentPlayerIndex!==0&&gameActive)setTimeout(aiTurn,650)}
-    function drawCards(i,a){for(let x=0;x<a;x++){if(!deck.length)deck=buildDeck();players[i].hand.push(deck.pop())}}
-    function drawAndEnd(){if(!gameActive||readingDelay)return;if(currentPlayerIndex!==0){showMessage("Not your turn.");return}drawCards(0,1);playSound("draw");showMessage("You drew a card.");nextTurn();render()}
-    function render(){directionLabel.textContent=direction===1?"↪":"↩";playersGrid.innerHTML=players.slice(0,4).map((p,i)=>`<div class="player ${currentPlayerIndex===i&&gameActive?'active':''}"><div class="avatar">${AVATARS[i]}</div><div class="name">${p.name}</div><div class="count">${p.hand.length}</div></div>`).join("");const colorMap={yellow:"#F7DC6F",blue:"#5DADE2",green:"#A3E4A3",red:"#E74C3C",dark:"#2C3E50"};if(currentTopCard){topCard.style.background=colorMap[currentTopCard.color];topCard.style.color=["red","dark"].includes(currentTopCard.color)?"#fff":"#102118";topCard.innerHTML=`${currentTopCard.iconSymbol}<br>${currentTopCard.name}`;matchRule.innerHTML=`${currentTopCard.color.toUpperCase()}<br>OR ${currentTopCard.iconSymbol}`}const hand=players[0].hand.slice(0,5),playableCount=players[0].hand.filter(canPlay).length;handInfo.textContent=`${playableCount} playable · ${players[0].hand.length} total`;cardsContainer.innerHTML=hand.map((card,i)=>`<div class="card ${card.bgClass} ${canPlay(card)?'playable':'not-playable'}" onclick="playCard(${i})"><div class="card-icon">${card.iconSymbol}</div><div class="card-name">${card.name}</div><div class="card-text">${card.question||card.effect||""}</div></div>`).join("")}
-    function setRoundLength(){timeLeft=Number(timerSelect.value);updateTimer()}
-    function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!gameActive)return;if(timeLeft<=0){endGame("Time is up!");return}timeLeft--;updateTimer()},1000)}
-    function updateTimer(){const m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById("timer").textContent=`${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`}
-    function showMessage(text){message.textContent=text;message.classList.add("show");clearTimeout(window.messageTimer);window.messageTimer=setTimeout(()=>message.classList.remove("show"),2400)}
-    function showModal(card){modalIcon.textContent=card.iconSymbol;modalLabel.textContent=`${card.name} QUESTION`;modalQuestion.textContent=card.question;questionModal.classList.add("show");speakText(card.question);clearTimeout(window.modalTimer);window.modalTimer=setTimeout(hideModal,10000)}
-    function hideModal(){questionModal.classList.remove("show")}function closeModalOutside(e){if(e.target.id==="questionModal")hideModal()}
-    function showBigQuestion(){if(!lastQuestion){showMessage("No question yet.");return}showModal(lastQuestion)}
-    function toggleSetup(){setupSheet.classList.toggle("show")}function closeSetupOutside(e){if(e.target.id==="setupSheet")toggleSetup()}
-    function applyPlayers(){const names=playerNamesInput.value.split(",").map(n=>n.trim()).filter(Boolean);if(names.length<2){showMessage("Add at least 2 players.");return}initGame(names.slice(0,4));toggleSetup()}
-    function restartGame(){const names=players.length?players.map(p=>p.name):["You","Player 2","Player 3","Player 4"];initGame(names);toggleSetup()}
-    function sortHand(){const order={yellow:1,blue:2,green:3,red:4,dark:5};players[0].hand.sort((a,b)=>order[a.color]-order[b.color]);render()}
-    function toggleVoice(){voiceEnabled=!voiceEnabled;voiceBtn.textContent=voiceEnabled?"🔊 Voice ON":"🔇 Voice OFF";if(!voiceEnabled)window.speechSynthesis?.cancel()}
-    function toggleCountdown(){countdownEnabled=!countdownEnabled;countBtn.textContent=countdownEnabled?"⏱ Count ON":"⏱ Count OFF"}
-    function speakText(text){window.lastSpeech=text;if(!voiceEnabled||!("speechSynthesis"in window))return;const speech=new SpeechSynthesisUtterance(text);speech.rate=.9;speech.lang="en-US";window.speechSynthesis.cancel();window.speechSynthesis.speak(speech)}
-    function repeatSpeech(){if(!voiceEnabled){showMessage("Voice is off.");return}if(window.lastSpeech)speakText(window.lastSpeech)}
-    function speakCountdown(text){if(!voiceEnabled||!("speechSynthesis"in window)){playSound("tick");return}const speech=new SpeechSynthesisUtterance(text);speech.rate=.9;window.speechSynthesis.cancel();window.speechSynthesis.speak(speech)}
-    function playSound(type){const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;const ctx=new AudioContext(),osc=ctx.createOscillator(),gain=ctx.createGain();const freq={card:520,action:220,draw:330,tick:760}[type]||520;osc.type="triangle";osc.frequency.value=freq;gain.gain.setValueAtTime(.025,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.08);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.08);setTimeout(()=>ctx.close(),150)}
-    function endGame(text){gameActive=false;clearInterval(timer);questionIcon.textContent="🏆";questionLabel.textContent="Game finished";questionText.textContent=text;showMessage(text);render()}
-    function initGame(names=["You","Player 2","Player 3","Player 4"]){deck=buildDeck();players=names.map(name=>({name,hand:[]}));currentPlayerIndex=0;direction=1;gameActive=true;readingDelay=false;lastQuestion=null;players.forEach((_,i)=>drawCards(i,3));let first=deck.pop();while(first.action){deck.unshift(first);first=deck.pop()}currentTopCard=first;setQuestion(first);setRoundLength();render();startTimer();showMessage("Everything fits in one screen.")}
-    initGame();
-  </script>
+  <div class="hand-section">
+    <div class="hand-header">
+      <div><div class="hand-title">🎴 Your Hand</div><div class="hand-subtitle" id="handSubtitle">0 playable</div></div>
+      <button class="small-btn" onclick="sortHand()">⇅ Sort</button>
+    </div>
+    <div class="hand-scroll" id="cardsContainer"></div>
+  </div>
+
+  <div class="bottom-controls">
+    <button class="main-btn secondary" onclick="toggleSettings()">⚙️ Setup</button>
+    <button class="main-btn" onclick="endTurn()">📖 Draw card</button>
+    <button class="main-btn secondary" onclick="showCurrentQuestionBig()">🔍 Zoom</button>
+  </div>
+</div>
+
+<div class="modal" id="questionModal" onclick="closeQuestionModal(event)">
+  <div class="modal-card">
+    <div class="modal-icon" id="modalIcon">🎴</div>
+    <div class="modal-label" id="modalLabelText">QUESTION</div>
+    <div class="modal-question" id="modalQuestion"></div>
+    <div class="modal-actions">
+      <button class="main-btn secondary" onclick="repeatSpeech()">🔊 Listen</button>
+      <button class="main-btn" onclick="hideModal()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="settings-sheet" id="settingsSheet">
+  <div class="section-title"><span>⚙️ Game Setup</span><button class="small-btn" onclick="toggleSettings()">Close</button></div>
+  <label class="field">Round length <select id="timerSelect"><option value="600">10 min</option><option value="900">15 min</option><option value="1200" selected>20 min</option><option value="1800">30 min</option></select></label>
+  <label class="field">Player names (comma) <input id="playerNamesInput" value="You, Player 2, Player 3, Player 4"/></label>
+  <div class="modal-actions"><button class="main-btn" onclick="applyPlayers()">Apply</button><button class="main-btn secondary" onclick="restartGame()">Restart</button></div>
+  <div class="modal-actions"><button class="main-btn secondary" id="audioBtn" onclick="toggleAudio()">🔇 Voice OFF</button><button class="main-btn secondary" id="countdownBtn" onclick="toggleCountdown()">⏱ Count ON</button></div>
+</div>
+
+<script>
+  const ICONS = ['🥚', '🐦‍⬛', '🪶', '🪵'];
+  const ICON_NAMES = ['Egg', 'Crow', 'Feather', 'Stick'];
+  const playerAvatars = ['🧑', '🦊', '🐸', '🐻', '🐼', '🦉'];
+
+  const questions = {
+    positive: ["What made you smile today?", "Who inspires you the most?", "What small pleasure do you really enjoy?", "What are you grateful for right now?", "What good thing happened this week?", "Who in your life makes you laugh the most?", "What beautiful thing did you see recently?", "What compliment really stayed with you?", "What happy memory do you treasure?"],
+    future: ["What dream are you working toward right now?", "Where do you see yourself in five years?", "What new skill would you love to learn?", "If money didn't matter, what would you do all day?", "What place do you really want to visit?", "What does your perfect normal day look like?", "What goal have you been delaying for too long?", "What kind of person do you want to become?", "What do you hope to accomplish next year?"],
+    reflective: ["What important lesson did life teach you recently?", "What would you tell your younger self?", "What have you completely changed your mind about?", "What challenge made you stronger?", "What are you genuinely proud of?", "What mistake taught you something valuable?", "How have you changed in the past year?", "What do you know now that you wish you knew earlier?", "What is the best advice you have ever received?"],
+    competitive: ["What skill are you better at than most people?", "What hidden talent do you have?", "What game do you almost always win?", "What could you confidently teach others?", "What is your personal superpower?", "What sport or activity are you good at?", "What are you faster at than most people?", "What challenge or competition have you won?", "What are you weirdly good at?"]
+  };
+
+  const cardTypes = {
+    positive: { name: "POSITIVE", color: "yellow", bgClass: "card-yellow" },
+    future: { name: "FUTURE", color: "blue", bgClass: "card-blue" },
+    reflective: { name: "REFLECT", color: "green", bgClass: "card-green" },
+    competitive: { name: "COMPETE", color: "red", bgClass: "card-red" },
+    plus2: { name: "+2", color: "dark", bgClass: "card-dark", action: "plus2", effect: "Next player draws 2 & loses turn" },
+    skip: { name: "SKIP", color: "dark", bgClass: "card-dark", action: "skip", effect: "Skip next player" },
+    swap: { name: "SWAP", color: "dark", bgClass: "card-dark", action: "swap", effect: "Swap your hand with another player" },
+    reverse: { name: "REVERSE", color: "dark", bgClass: "card-dark", action: "reverse", effect: "Reverse direction of play" }
+  };
+
+  let deck = [], players = [], currentPlayerIndex = 0, direction = 1, currentTopCard = null, gameActive = true;
+  let timeLeft = 1200, gameTimer = null, readingDelay = false, lastQuestionCard = null;
+  let audioEnabled = false, countdownEnabled = true;
+
+  function getRandomIcon() { const i = Math.floor(Math.random() * ICONS.length); return { symbol: ICONS[i], name: ICON_NAMES[i] }; }
+  function createCard(template) { const icon = getRandomIcon(); return { ...template, iconSymbol: icon.symbol, iconName: icon.name }; }
+
+  function buildDeck() {
+    let nd = [];
+    for (let cat of ['positive','future','reflective','competitive']) 
+      questions[cat].forEach(q => nd.push(createCard({ type:cat, ...cardTypes[cat], question:q })));
+    for (let i=0;i<3;i++) {
+      nd.push(createCard({ type:"plus2", ...cardTypes.plus2 }));
+      nd.push(createCard({ type:"skip", ...cardTypes.skip }));
+      nd.push(createCard({ type:"swap", ...cardTypes.swap }));
+      nd.push(createCard({ type:"reverse", ...cardTypes.reverse }));
+    }
+    return nd.sort(()=>Math.random()-0.5);
+  }
+
+  function canPlay(card) { return gameActive && !readingDelay && currentPlayerIndex===0 && (!currentTopCard || card.color===currentTopCard.color || card.iconSymbol===currentTopCard.iconSymbol); }
+  
+  function playCard(idx) {
+    if(!gameActive || readingDelay || currentPlayerIndex!==0) { showMessage("⏳ Not your turn or reading phase"); return; }
+    const card = players[0].hand[idx];
+    if(!canPlay(card)) { showMessage(`❌ Need ${currentTopCard?.color} or ${currentTopCard?.iconSymbol} to match`); return; }
+    players[0].hand.splice(idx,1);
+    handlePlayedCard(card,0);
+    if(players[0].hand.length===0) endGame("🏆 YOU WON! Incredible!");
+    else if(card.question) startReadingDelay();
+    else advanceTurn();
+    renderGame();
+  }
+
+  function handlePlayedCard(card, pIdx) {
+    playSound("card");
+    currentTopCard = { color:card.color, iconSymbol:card.iconSymbol, iconName:card.iconName, name:card.name, question:card.question||null };
+    
+    // UPDATE MAIN DISPLAY WITH FULL QUESTION TEXT
+    if(card.question) {
+      lastQuestionCard = card;
+      document.getElementById("currentIcon").textContent = card.iconSymbol;
+      document.getElementById("currentLabel").textContent = `📢 ${card.name} · ${card.iconName}`;
+      document.getElementById("currentQuestion").textContent = card.question;
+      showQuestionModal(card);
+      showMessage(`💬 ${players[pIdx].name} asked: "${card.question}"`);
+    } else {
+      document.getElementById("currentIcon").textContent = card.iconSymbol;
+      document.getElementById("currentLabel").textContent = `⚡ ${card.name} · ACTION`;
+      document.getElementById("currentQuestion").textContent = card.effect || "Action card played!";
+      showMessage(`🎴 ${players[pIdx].name} played ${card.name}. ${card.effect || ''}`);
+    }
+    
+    if(card.action==="plus2") { let target = nextPlayerIndex(); drawCards(target,2); currentPlayerIndex=target; showMessage(`➕ ${players[target].name} draws 2 and is skipped`); advanceTurn(); }
+    else if(card.action==="skip") { currentPlayerIndex = nextPlayerIndex(); showMessage(`⏭️ ${players[currentPlayerIndex].name} is skipped`); advanceTurn(); }
+    else if(card.action==="swap" && pIdx===0) { let target = (currentPlayerIndex+1)%players.length; let temp = [...players[0].hand]; players[0].hand = [...players[target].hand]; players[target].hand = temp; showMessage(`🔄 Swapped hands with ${players[target].name}`); }
+    else if(card.action==="reverse") { direction *= -1; showMessage(`🔄 Direction reversed`); }
+  }
+
+  function startReadingDelay() { readingDelay=true; showMessage("📖 10 seconds to read the question..."); renderGame(); setTimeout(()=>{ if(!gameActive) return; startCountdownThenNextTurn(); },10000); }
+  
+  function startCountdownThenNextTurn() { 
+    if(!countdownEnabled) { readingDelay=false; advanceTurn(); renderGame(); return; } 
+    speakCountdown("3"); setTimeout(()=>speakCountdown("2"),1000); setTimeout(()=>speakCountdown("1"),2000); 
+    setTimeout(()=>{ readingDelay=false; showMessage("👉 Next player's turn!"); playSound("success"); advanceTurn(); renderGame(); },3000); 
+  }
+  
+  function advanceTurn() { if(!gameActive) return; currentPlayerIndex = nextPlayerIndex(); renderGame(); if(currentPlayerIndex!==0) setTimeout(()=>aiTurn(),550); }
+  function nextPlayerIndex() { return (currentPlayerIndex+direction+players.length)%players.length; }
+  function drawCards(pid,amt) { for(let i=0;i<amt;i++) { if(deck.length===0) deck=buildDeck(); players[pid].hand.push(deck.pop()); } }
+  
+  function aiTurn() {
+    if(!gameActive || currentPlayerIndex===0) return;
+    const ai=players[currentPlayerIndex];
+    let idx = ai.hand.findIndex(c=>c.color===currentTopCard.color || c.iconSymbol===currentTopCard.iconSymbol);
+    if(idx!==-1){ 
+      let card=ai.hand.splice(idx,1)[0]; 
+      handlePlayedCard(card,currentPlayerIndex); 
+      if(ai.hand.length===0) endGame(`🏆 ${ai.name} won!`);
+      else if(card.question) startReadingDelay();
+      else advanceTurn();
+    }
+    else { drawCards(currentPlayerIndex,1); showMessage(`🤖 ${ai.name} drew a card.`); advanceTurn(); }
+    renderGame();
+  }
+  
+  function endTurn(){ if(!gameActive||readingDelay||currentPlayerIndex!==0) showMessage("Wait your turn"); else { drawCards(0,1); playSound("draw"); showMessage("📤 Drew 1 card, turn ends."); advanceTurn(); renderGame(); } }
+  function sortHand(){ players[0].hand.sort((a,b)=> (a.color.localeCompare(b.color) || a.iconName.localeCompare(b.iconName))); renderGame(); }
+  
+  function showQuestionModal(card){
+    document.getElementById("modalIcon").textContent = card.iconSymbol;
+    document.getElementById("modalLabelText").textContent = `${card.name} · ${card.iconName}`;
+    document.getElementById("modalQuestion").textContent = card.question;
+    document.getElementById("questionModal").classList.add("show");
+    speakText(card.question);
+    setTimeout(()=> { if(document.getElementById("questionModal").classList.contains("show")) hideModal(); }, 12000);
+  }
+  
+  function showCurrentQuestionBig(){ if(lastQuestionCard) showQuestionModal(lastQuestionCard); else showMessage("No question card played yet — play one!"); }
+  function closeQuestionModal(e){ if(e.target.id==="questionModal") hideModal(); }
+  function hideModal(){ document.getElementById("questionModal").classList.remove("show"); }
+  
+  function speakText(t){ window.lastSpeech=t; if(!audioEnabled||!window.speechSynthesis) return; let u=new SpeechSynthesisUtterance(t); u.rate=0.9; u.lang="en-US"; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }
+  function speakCountdown(t){ if(audioEnabled && window.speechSynthesis){ let u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } else playSound("tick"); }
+  function repeatSpeech(){ if(!audioEnabled){showMessage("Enable voice in Setup"); return;} if(window.lastSpeech) speakText(window.lastSpeech); }
+  function toggleAudio(){ audioEnabled=!audioEnabled; document.getElementById("audioBtn").innerHTML=audioEnabled?"🔊 Voice ON":"🔇 Voice OFF"; if(!audioEnabled) window.speechSynthesis?.cancel(); showMessage(audioEnabled?"Voice ON - questions will be read aloud":"Voice OFF"); }
+  function toggleCountdown(){ countdownEnabled=!countdownEnabled; document.getElementById("countdownBtn").innerHTML=countdownEnabled?"⏱ Count ON":"⏱ Count OFF"; showMessage(countdownEnabled?"Countdown between turns ON":"Countdown OFF"); }
+  
+  function playSound(type){ try{ let ctx=new (window.AudioContext||window.webkitAudioContext)(); let freq={card:540,draw:320,success:880,tick:760}[type]||500; let o=ctx.createOscillator(); let g=ctx.createGain(); o.type="sine"; o.frequency.value=freq; g.gain.value=0.04; g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.09); setTimeout(()=>ctx.close(),150); }catch(e){} }
+  
+  function showMessage(txt){ document.getElementById("messageArea").textContent=txt; }
+  
+  function startTimer(){ clearInterval(gameTimer); gameTimer=setInterval(()=>{ if(!gameActive) return; if(timeLeft<=0) endGame("🎉 Time's up — fantastic game!"); else { timeLeft--; let mins=Math.floor(timeLeft/60), secs=timeLeft%60; document.getElementById("timer").textContent=`${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; } },1000); }
+  function setRoundLength(){ timeLeft=Number(document.getElementById("timerSelect").value); let mins=Math.floor(timeLeft/60),secs=timeLeft%60; document.getElementById("timer").textContent=`${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; }
+  function toggleSettings(){ document.getElementById("settingsSheet").classList.toggle("show"); }
+  function applyPlayers(){ let names=document.getElementById("playerNamesInput").value.split(',').map(n=>n.trim()).filter(Boolean); if(names.length<2){ showMessage("Need at least 2 players"); return; } initGame(names); toggleSettings(); }
+  function restartGame(){ let names=players.length?players.map(p=>p.name):["You","P2","P3","P4"]; initGame(names); toggleSettings(); }
+  function endGame(msg){ gameActive=false; clearInterval(gameTimer); showMessage(msg); document.getElementById("currentIcon").textContent="🏆"; document.getElementById("currentLabel").textContent="GAME OVER"; document.getElementById("currentQuestion").textContent=msg; renderGame(); }
+  
+  function renderGame(){
+    document.getElementById("directionLabel").innerHTML=direction===1?"↪":"↩";
+    document.getElementById("playersGrid").innerHTML=players.map((p,i)=>`<div class="player-pill ${currentPlayerIndex===i && gameActive?'active':''}"><div class="avatar">${playerAvatars[i%playerAvatars.length]}</div><div class="player-name">${p.name}</div><div class="player-count">${p.hand.length}</div></div>`).join('');
+    if(currentTopCard){ 
+      let colorMap={yellow:'#F7DC6F',blue:'#5DADE2',green:'#A3E4A3',red:'#E74C3C',dark:'#2C3E50'}; 
+      let previewDiv=document.getElementById("topCardPreview"); 
+      previewDiv.style.background=colorMap[currentTopCard.color]; 
+      previewDiv.style.color=(currentTopCard.color==='red'||currentTopCard.color==='dark')?'white':'#111'; 
+      previewDiv.innerHTML=`${currentTopCard.iconSymbol} ${currentTopCard.name}`; 
+      document.getElementById("matchRule").innerHTML=`${currentTopCard.color.toUpperCase()}<br>${currentTopCard.iconSymbol}`;
+    }
+    let hand=players[0]?.hand||[]; 
+    let playableCount=hand.filter(canPlay).length; 
+    document.getElementById("handSubtitle").innerHTML=`${playableCount} playable · ${hand.length} total`;
+    document.getElementById("cardsContainer").innerHTML=hand.map((c,i)=>`<div class="game-card ${c.bgClass} ${canPlay(c)?'playable':'not-playable'}" onclick="playCard(${i})"><div class="card-status">${canPlay(c)?'▶ PLAY':'⏸'}</div><div class="card-icon">${c.iconSymbol}</div><div class="card-name">${c.name}</div>${c.question?`<div class="card-question">❝ ${c.question} ❞</div>`:''}${c.effect?`<div class="card-effect">⚡ ${c.effect}</div>`:''}</div>`).join('');
+  }
+  
+  function initGame(names=["You","P2","P3","P4"]){
+    deck=buildDeck(); players=names.map((n,i)=>({id:i,name:n,hand:[]})); currentPlayerIndex=0; direction=1; gameActive=true; readingDelay=false; lastQuestionCard=null;
+    players.forEach((_,i)=>drawCards(i,5));
+    let first=deck.pop(); 
+    while(first?.action){ deck.unshift(first); first=deck.pop(); }
+    currentTopCard={ color:first.color, iconSymbol:first.iconSymbol, iconName:first.iconName, name:first.name, question:first.question||null };
+    if(first.question){
+      document.getElementById("currentIcon").textContent = first.iconSymbol;
+      document.getElementById("currentLabel").textContent = `📢 ${first.name} · ${first.iconName}`;
+      document.getElementById("currentQuestion").textContent = first.question;
+      lastQuestionCard = first;
+    } else {
+      document.getElementById("currentIcon").textContent = first.iconSymbol;
+      document.getElementById("currentLabel").textContent = `${first.name} · start`;
+      document.getElementById("currentQuestion").textContent = first.effect || "Game started! Play a card.";
+    }
+    setRoundLength(); renderGame(); startTimer(); showMessage("✨ Tap a card with a gold border to play it — full question appears above!");
+  }
+  initGame();
+</script>
 </body>
 </html>
