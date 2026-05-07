@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Kauwe Bende · Full Question Display</title>
+  <title>Kauwe Bende · NEON EDITION</title>
   <link rel="icon" href="crow.svg" type="image/svg+xml" />
 
   <style>
@@ -16,15 +16,16 @@
     }
 
     :root {
-      --green: #153820;
-      --dark: #0b1f14;
-      --gold: #f7d44a;
-      --cream: #fff8e5;
-      --ink: #14221d;
-      --red: #e74c3c;
-      --blue: #5dade2;
-      --soft: rgba(255,255,255,0.14);
-      --shadow: 0 8px 20px rgba(0,0,0,0.25);
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff007f;
+      --neon-purple: #bf00ff;
+      --neon-green: #00ff88;
+      --neon-yellow: #ffea00;
+      --dark-bg: #0a0a1a;
+      --card-bg-dark: #0f0f2a;
+      --glass: rgba(0, 243, 255, 0.1);
+      --glow: 0 0 10px rgba(0, 243, 255, 0.5);
+      --shadow-neon: 0 0 20px rgba(0, 243, 255, 0.3);
     }
 
     html, body {
@@ -37,221 +38,474 @@
     }
 
     body {
-      background: radial-gradient(circle at top left, rgba(247,212,74,0.2), #07160f 90%),
-                  linear-gradient(145deg, #1a472a 0%, #07160f 100%);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: white;
+      background: radial-gradient(ellipse at 20% 30%, #0f0f2a, #050510);
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Poppins', sans-serif;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+    }
+
+    /* animated grid background */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--neon-cyan) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.08;
+      pointer-events: none;
     }
 
     .app {
       width: 100%;
-      max-width: 540px;
+      max-width: 560px;
       height: 100%;
       margin: 0 auto;
-      padding: 0.55rem 0.65rem 0.65rem;
+      padding: 0.6rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.55rem;
       overflow: hidden;
+      position: relative;
+      z-index: 2;
     }
 
+    /* TOP BAR - GLASS NEON */
     .top-bar {
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
-      background: rgba(7, 22, 15, 0.8);
-      backdrop-filter: blur(12px);
-      border-radius: 2rem;
-      padding: 0.3rem 0.7rem;
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(10, 10, 26, 0.75);
+      backdrop-filter: blur(16px);
+      border-radius: 2.5rem;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
     }
 
-    .brand { display: flex; align-items: center; gap: 0.4rem; }
-    .logo { width: 36px; height: 36px; border-radius: 12px; background: rgba(255,255,255,0.12); display: grid; place-items: center; font-size: 1.4rem; }
-    .brand h1 { font-size: 1rem; line-height: 1.1; }
-    .brand p { font-size: 0.6rem; color: rgba(255,255,255,0.7); }
-    .timer { background: #000000aa; color: var(--gold); padding: 0.35rem 0.8rem; border-radius: 2rem; font-weight: 900; font-size: 0.9rem; font-family: monospace; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-    .section { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; padding: 0.5rem; backdrop-filter: blur(6px); flex-shrink: 0; }
-    .section-title { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; margin-bottom: 0.4rem; }
-    .players-strip { display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: thin; padding-bottom: 0.2rem; }
-    .player-pill { flex: 0 0 auto; min-width: 70px; background: rgba(255,255,255,0.95); color: var(--ink); border-radius: 0.9rem; padding: 0.3rem 0.4rem; text-align: center; border: 2px solid transparent; }
-    .player-pill.active { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(247,212,74,0.5); }
-    .avatar { font-size: 1.1rem; }
-    .player-name { font-size: 0.65rem; font-weight: 800; }
-    .player-count { font-size: 0.6rem; background: var(--green); display: inline-block; padding: 0.1rem 0.45rem; border-radius: 1rem; color: white; }
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      box-shadow: 0 0 10px var(--neon-pink);
+    }
 
-    /* MAIN QUESTION DISPLAY - BIG AND CLEAR */
+    .brand h1 {
+      font-size: 1.1rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .brand p {
+      font-size: 0.6rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 3px var(--neon-green);
+    }
+
+    .timer {
+      background: #000000aa;
+      backdrop-filter: blur(4px);
+      color: var(--neon-yellow);
+      padding: 0.35rem 0.9rem;
+      border-radius: 3rem;
+      font-weight: 900;
+      font-size: 1rem;
+      font-family: monospace;
+      letter-spacing: 2px;
+      border: 1px solid var(--neon-yellow);
+      text-shadow: 0 0 6px var(--neon-yellow);
+    }
+
+    /* sections */
+    .section {
+      background: rgba(15, 15, 42, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 243, 255, 0.35);
+      border-radius: 1.3rem;
+      padding: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .players-strip {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding-bottom: 0.2rem;
+    }
+
+    .player-pill {
+      flex: 0 0 auto;
+      min-width: 78px;
+      background: linear-gradient(145deg, #111128, #0a0a1e);
+      border-radius: 1rem;
+      padding: 0.4rem 0.3rem;
+      text-align: center;
+      border: 1px solid var(--neon-purple);
+      transition: all 0.1s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .player-pill.active {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 2px rgba(0, 243, 255, 0.7), 0 0 15px var(--neon-cyan);
+      background: linear-gradient(145deg, #1a1a3a, #0f0f2a);
+    }
+
+    .avatar { font-size: 1.3rem; filter: drop-shadow(0 0 4px cyan); }
+    .player-name { font-size: 0.7rem; font-weight: 800; color: #fff; }
+    .player-count { font-size: 0.6rem; background: var(--neon-pink); display: inline-block; padding: 0.1rem 0.5rem; border-radius: 1rem; color: white; margin-top: 0.15rem; font-weight: bold; box-shadow: 0 0 4px pink; }
+
+    /* MAIN QUESTION CARD - neon pulse */
     .current-question-card {
-      background: linear-gradient(135deg, #fffdf0, #fff3be);
-      color: var(--ink);
-      border-radius: 1.2rem;
+      background: linear-gradient(135deg, #12122e, #070718);
+      border-radius: 1.5rem;
       padding: 0.7rem;
       min-height: 110px;
       display: flex;
       align-items: center;
-      gap: 0.7rem;
-      border: 3px solid rgba(247,212,74,0.9);
-      box-shadow: var(--shadow);
+      gap: 0.8rem;
+      border: 2px solid var(--neon-green);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .left-icon {
+      font-size: 2.8rem;
+      background: rgba(0, 255, 136, 0.15);
+      border-radius: 1.5rem;
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--neon-green);
+    }
+
+    .question-content { flex: 1; text-align: left; }
+    .current-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      background: var(--neon-purple);
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 2rem;
+      color: white;
+      margin-bottom: 0.3rem;
+      box-shadow: 0 0 6px purple;
+    }
+    .current-question {
+      font-size: 0.95rem;
+      line-height: 1.3;
+      font-weight: 700;
+      word-break: break-word;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 2px cyan;
+    }
+
+    .match-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    .mini-card {
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      border-radius: 1rem;
+      padding: 0.4rem;
+      text-align: center;
+      border: 1px solid var(--neon-pink);
+    }
+    .mini-title { font-size: 0.6rem; color: var(--neon-pink); font-weight: 800; }
+    .top-card-preview {
+      background: #0b0b22;
+      border-radius: 0.9rem;
+      padding: 0.3rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      border: 1px solid var(--neon-yellow);
+      color: var(--neon-yellow);
+    }
+    .match-rule { font-size: 0.8rem; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 4px #00ff88; }
+
+    .message {
+      background: rgba(0,0,0,0.8);
+      border-radius: 1rem;
+      padding: 0.45rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-align: center;
+      border-left: 4px solid var(--neon-cyan);
+      border-right: 4px solid var(--neon-pink);
       flex-shrink: 0;
     }
-    .left-icon { font-size: 2.5rem; background: rgba(0,0,0,0.08); border-radius: 2rem; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
-    .question-content { flex: 1; text-align: left; }
-    .current-label { font-size: 0.7rem; font-weight: 800; background: var(--green); display: inline-block; padding: 0.2rem 0.7rem; border-radius: 1rem; color: white; margin-bottom: 0.3rem; }
-    .current-question { font-size: 1rem; line-height: 1.35; font-weight: 800; word-break: break-word; white-space: normal; overflow: visible; }
 
-    .match-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0; }
-    .mini-card { background: rgba(0,0,0,0.4); border-radius: 1rem; padding: 0.35rem; text-align: center; }
-    .mini-title { font-size: 0.6rem; opacity: 0.8; font-weight: 700; }
-    .top-card-preview { background: white; border-radius: 0.8rem; padding: 0.3rem; font-size: 0.75rem; font-weight: 800; min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
-    .match-rule { font-size: 0.75rem; font-weight: 900; color: var(--gold); }
+    /* HAND SECTION - CYBER SCROLL */
+    .hand-section { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+    .hand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0 0.2rem;
+    }
+    .hand-title { font-size: 0.85rem; font-weight: 900; color: var(--neon-cyan); text-shadow: 0 0 3px cyan; }
+    .hand-subtitle { font-size: 0.6rem; color: #aaaaff; }
+    .small-btn {
+      background: rgba(0, 243, 255, 0.15);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 2rem;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      cursor: pointer;
+      transition: 0.05s linear;
+    }
+    .small-btn:active { transform: scale(0.94); background: var(--neon-cyan); color: black; }
 
-    .message { background: rgba(0,0,0,0.7); border-radius: 1rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; font-weight: 700; text-align: center; flex-shrink: 0; }
+    .hand-scroll {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 0.3rem;
+      flex: 1;
+    }
 
-    .hand-section { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 0.2rem; }
-    .hand-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem; }
-    .hand-title { font-size: 0.8rem; font-weight: 900; }
-    .hand-subtitle { font-size: 0.6rem; color: rgba(255,255,255,0.8); }
-    .small-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 2rem; padding: 0.2rem 0.65rem; font-size: 0.65rem; font-weight: 800; color: white; cursor: pointer; }
-
-    .hand-scroll { display: flex; gap: 0.6rem; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; padding-bottom: 0.3rem; flex: 1; }
-    
-    /* CARD DESIGN - TALLER TO FIT FULL QUESTION TEXT */
-    .game-card { 
-      flex: 0 0 170px; 
-      scroll-snap-align: start; 
-      border-radius: 1rem; 
-      padding: 0.6rem 0.5rem; 
-      text-align: center; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 0.25rem; 
-      position: relative; 
-      border-bottom-width: 5px; 
-      border-bottom-style: solid; 
-      cursor: pointer; 
-      transition: transform 0.05s ease; 
-      height: 180px;
+    /* GLOWING CARDS */
+    .game-card {
+      flex: 0 0 168px;
+      scroll-snap-align: start;
+      border-radius: 1.2rem;
+      padding: 0.6rem 0.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      position: relative;
+      border-bottom-width: 4px;
+      border-bottom-style: solid;
+      cursor: pointer;
+      transition: transform 0.05s, box-shadow 0.1s;
+      height: 185px;
       overflow-y: auto;
+      backdrop-filter: blur(2px);
     }
     .game-card::-webkit-scrollbar { width: 2px; }
-    .game-card:active { transform: scale(0.97); }
-    .card-status { position: absolute; top: 0.2rem; right: 0.4rem; background: rgba(0,0,0,0.7); font-size: 0.55rem; padding: 0.1rem 0.4rem; border-radius: 1rem; font-weight: 800; color: white; }
-    .card-icon { font-size: 1.6rem; }
-    .card-name { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; }
-    .card-question { 
-      font-size: 0.72rem; 
-      font-weight: 700; 
-      line-height: 1.25; 
-      color: #1e2a1a; 
-      word-break: break-word;
-      white-space: normal;
-      margin-top: 0.2rem;
-      background: rgba(255,255,240,0.5);
-      padding: 0.25rem;
-      border-radius: 0.5rem;
+    .game-card:active { transform: scale(0.96); }
+    .card-status {
+      position: absolute;
+      top: 0.3rem;
+      right: 0.5rem;
+      background: #000000aa;
+      backdrop-filter: blur(4px);
+      font-size: 0.55rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 1rem;
+      font-weight: 800;
+      color: var(--neon-green);
     }
-    .card-effect { font-size: 0.6rem; font-weight: 800; margin-top: 0.1rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 0.2rem; }
-    .card-yellow { background: #F7DC6F; border-bottom-color: #D4AC0D; color: #1e2a1a; }
-    .card-blue { background: #5DADE2; border-bottom-color: #2E86C1; color: #111; }
-    .card-green { background: #A3E4A3; border-bottom-color: #2E7D32; color: #111; }
-    .card-red { background: #E74C3C; border-bottom-color: #B03A2E; color: white; }
-    .card-dark { background: #2C3E50; border-bottom-color: #1A252F; color: white; }
-    .card-dark .card-question { color: #f0f0f0; background: rgba(0,0,0,0.3); }
-    .playable { outline: 3px solid var(--gold); filter: drop-shadow(0 2px 6px gold); }
-    .not-playable { opacity: 0.6; filter: grayscale(0.2); }
+    .card-icon { font-size: 1.8rem; filter: drop-shadow(0 0 5px currentColor); }
+    .card-name { font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; }
+    .card-question {
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1.25;
+      word-break: break-word;
+      margin-top: 0.2rem;
+      background: rgba(0,0,0,0.35);
+      padding: 0.25rem;
+      border-radius: 0.6rem;
+    }
+    .card-effect { font-size: 0.6rem; font-weight: 800; margin-top: 0.1rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 0.2rem; }
 
-    .bottom-controls { flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; padding: 0.4rem 0; }
-    .main-btn { border: 0; border-radius: 2rem; padding: 0.45rem 0.2rem; font-weight: 800; font-size: 0.75rem; background: var(--gold); color: var(--ink); cursor: pointer; }
-    .main-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); }
+    /* Card themes (neon adapted) */
+    .card-yellow { background: linear-gradient(145deg, #f9e45b, #e6c200); border-bottom-color: #ffea00; color: #1a1a2a; }
+    .card-blue { background: linear-gradient(145deg, #2a9eff, #0a6eff); border-bottom-color: #00f3ff; color: white; }
+    .card-green { background: linear-gradient(145deg, #00cc88, #009966); border-bottom-color: #00ffaa; color: white; }
+    .card-red { background: linear-gradient(145deg, #ff3366, #cc0044); border-bottom-color: #ff007f; color: white; }
+    .card-dark { background: linear-gradient(145deg, #1f1f44, #0a0a2a); border-bottom-color: #bf00ff; color: #e0e0ff; }
+    .playable { outline: 3px solid var(--neon-green); box-shadow: 0 0 18px #00ff88; filter: brightness(1.02); }
+    .not-playable { opacity: 0.65; filter: grayscale(0.3); }
 
-    /* MODAL - BIGGER QUESTION DISPLAY */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .bottom-controls {
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.6rem;
+      padding: 0.3rem 0;
+    }
+    .main-btn {
+      border: none;
+      border-radius: 2rem;
+      padding: 0.5rem 0.2rem;
+      font-weight: 900;
+      font-size: 0.75rem;
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+      color: #050510;
+      cursor: pointer;
+      transition: 0.05s linear;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .main-btn.secondary {
+      background: rgba(0,0,0,0.7);
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      text-shadow: 0 0 3px cyan;
+    }
+    .main-btn:active { transform: scale(0.96); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
     .modal.show { display: flex; }
-    .modal-card { width: 90%; max-width: 380px; background: #fffef7; border-radius: 2rem; padding: 1.5rem; text-align: center; border: 4px solid var(--gold); }
-    .modal-icon { font-size: 3rem; }
-    .modal-label { background: var(--green); color: white; display: inline-block; padding: 0.3rem 1rem; border-radius: 2rem; font-weight: 800; font-size: 0.75rem; margin: 0.5rem 0; }
-    .modal-question { font-size: 1.4rem; font-weight: 900; margin: 1rem 0; line-height: 1.4; word-break: break-word; }
-    .modal-actions { display: flex; gap: 0.6rem; justify-content: center; margin-top: 1rem; }
+    .modal-card {
+      width: 88%;
+      max-width: 360px;
+      background: linear-gradient(145deg, #111133, #050518);
+      border-radius: 2rem;
+      padding: 1.4rem;
+      text-align: center;
+      border: 2px solid var(--neon-green);
+      box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+    }
+    .modal-icon { font-size: 3rem; filter: drop-shadow(0 0 8px cyan); }
+    .modal-label { background: var(--neon-pink); display: inline-block; padding: 0.2rem 1rem; border-radius: 2rem; font-weight: 800; margin: 0.4rem 0; }
+    .modal-question { font-size: 1.35rem; font-weight: 800; margin: 0.7rem 0; line-height: 1.3; color: var(--neon-cyan); }
+    .modal-actions { display: flex; gap: 0.6rem; justify-content: center; margin-top: 0.8rem; }
 
-    .settings-sheet { position: fixed; left: 0; right: 0; bottom: 0; background: #0f2a1c; border-radius: 1.2rem 1.2rem 0 0; padding: 0.8rem; transform: translateY(105%); transition: 0.2s; z-index: 90; border-top: 1px solid gold; }
+    .settings-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #0a0a2ae0;
+      backdrop-filter: blur(20px);
+      border-radius: 1.5rem 1.5rem 0 0;
+      padding: 1rem;
+      transform: translateY(105%);
+      transition: 0.2s;
+      z-index: 90;
+      border-top: 2px solid var(--neon-cyan);
+    }
     .settings-sheet.show { transform: translateY(0); }
-    .field { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.7rem; font-size: 0.7rem; font-weight: 800; }
-    input, select { padding: 0.5rem; border-radius: 1rem; border: none; font-weight: 700; }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; font-weight: 800; color: var(--neon-cyan); }
+    input, select { padding: 0.6rem; border-radius: 1.2rem; border: none; background: #1a1a3a; color: white; font-weight: 700; outline: none; }
   </style>
 </head>
 <body>
 <div class="app">
   <div class="top-bar">
-    <div class="brand"><div class="logo">🐦‍⬛</div><div><h1>Kauwe Bende</h1><p>Questions visible</p></div></div>
+    <div class="brand"><div class="logo">⚡</div><div><h1>KAUWE BENDE</h1><p>NEON / CYBER</p></div></div>
     <div class="timer" id="timer">20:00</div>
   </div>
 
   <div class="section">
-    <div class="section-title"><span>👥 Players</span><span id="directionLabel">↪</span></div>
+    <div class="section-title"><span>⚡ PLAYERS</span><span id="directionLabel">↪</span></div>
     <div class="players-strip" id="playersGrid"></div>
   </div>
 
-  <!-- MAIN QUESTION AREA - FULL TEXT ALWAYS VISIBLE -->
-  <div class="current-question-card" id="currentCardArea">
+  <div class="current-question-card">
     <div class="left-icon" id="currentIcon">🎴</div>
     <div class="question-content">
-      <div class="current-label" id="currentLabel">Current Question</div>
-      <div class="current-question" id="currentQuestion">Play a question card to see it here ✨</div>
+      <div class="current-label" id="currentLabel">ACTIVE CARD</div>
+      <div class="current-question" id="currentQuestion">Insert a question card to spark the vibe</div>
     </div>
   </div>
 
   <div class="match-row">
-    <div class="mini-card"><div class="mini-title">TOP CARD</div><div class="top-card-preview" id="topCardPreview">—</div></div>
-    <div class="mini-card"><div class="mini-title">MATCH</div><div class="match-rule" id="matchRule">color / icon</div></div>
+    <div class="mini-card"><div class="mini-title">TOP PROTOCOL</div><div class="top-card-preview" id="topCardPreview">—</div></div>
+    <div class="mini-card"><div class="mini-title">MATCH RULE</div><div class="match-rule" id="matchRule">color / icon</div></div>
   </div>
 
-  <div class="message" id="messageArea">💡 Tap a highlighted (gold border) card to play it</div>
+  <div class="message" id="messageArea">💠 GLOWING CARDS ARE PLAYABLE · TAP TO ENGAGE</div>
 
   <div class="hand-section">
     <div class="hand-header">
-      <div><div class="hand-title">🎴 Your Hand</div><div class="hand-subtitle" id="handSubtitle">0 playable</div></div>
-      <button class="small-btn" onclick="sortHand()">⇅ Sort</button>
+      <div><div class="hand-title">🎴 YOUR HAND</div><div class="hand-subtitle" id="handSubtitle">0 playable</div></div>
+      <button class="small-btn" onclick="sortHand()">⟳ SORT</button>
     </div>
     <div class="hand-scroll" id="cardsContainer"></div>
   </div>
 
   <div class="bottom-controls">
-    <button class="main-btn secondary" onclick="toggleSettings()">⚙️ Setup</button>
-    <button class="main-btn" onclick="endTurn()">📖 Draw card</button>
-    <button class="main-btn secondary" onclick="showCurrentQuestionBig()">🔍 Zoom</button>
+    <button class="main-btn secondary" onclick="toggleSettings()">⚙️ SETUP</button>
+    <button class="main-btn" onclick="endTurn()">📀 DRAW</button>
+    <button class="main-btn secondary" onclick="showCurrentQuestionBig()">🔍 ZOOM</button>
   </div>
 </div>
 
 <div class="modal" id="questionModal" onclick="closeQuestionModal(event)">
   <div class="modal-card">
     <div class="modal-icon" id="modalIcon">🎴</div>
-    <div class="modal-label" id="modalLabelText">QUESTION</div>
+    <div class="modal-label" id="modalLabelText">NEON QUESTION</div>
     <div class="modal-question" id="modalQuestion"></div>
     <div class="modal-actions">
-      <button class="main-btn secondary" onclick="repeatSpeech()">🔊 Listen</button>
-      <button class="main-btn" onclick="hideModal()">Got it</button>
+      <button class="main-btn secondary" onclick="repeatSpeech()">🔊 LISTEN</button>
+      <button class="main-btn" onclick="hideModal()">CONTINUE</button>
     </div>
   </div>
 </div>
 
 <div class="settings-sheet" id="settingsSheet">
-  <div class="section-title"><span>⚙️ Game Setup</span><button class="small-btn" onclick="toggleSettings()">Close</button></div>
-  <label class="field">Round length <select id="timerSelect"><option value="600">10 min</option><option value="900">15 min</option><option value="1200" selected>20 min</option><option value="1800">30 min</option></select></label>
-  <label class="field">Player names (comma) <input id="playerNamesInput" value="You, Player 2, Player 3, Player 4"/></label>
-  <div class="modal-actions"><button class="main-btn" onclick="applyPlayers()">Apply</button><button class="main-btn secondary" onclick="restartGame()">Restart</button></div>
-  <div class="modal-actions"><button class="main-btn secondary" id="audioBtn" onclick="toggleAudio()">🔇 Voice OFF</button><button class="main-btn secondary" id="countdownBtn" onclick="toggleCountdown()">⏱ Count ON</button></div>
+  <div class="section-title"><span>🌀 NEON CONSOLE</span><button class="small-btn" onclick="toggleSettings()">CLOSE</button></div>
+  <label class="field">⏱ ROUND LENGTH <select id="timerSelect"><option value="600">10 min</option><option value="900">15 min</option><option value="1200" selected>20 min</option><option value="1800">30 min</option></select></label>
+  <label class="field">👥 PLAYER NAMES (comma) <input id="playerNamesInput" value="You, Player 2, Player 3, Player 4"/></label>
+  <div class="modal-actions"><button class="main-btn" onclick="applyPlayers()">APPLY</button><button class="main-btn secondary" onclick="restartGame()">RESTART</button></div>
+  <div class="modal-actions"><button class="main-btn secondary" id="audioBtn" onclick="toggleAudio()">🔇 VOICE OFF</button><button class="main-btn secondary" id="countdownBtn" onclick="toggleCountdown()">⏱ COUNT ON</button></div>
 </div>
 
 <script>
-  const ICONS = ['🥚', '🐦‍⬛', '🪶', '🪵'];
-  const ICON_NAMES = ['Egg', 'Crow', 'Feather', 'Stick'];
-  const playerAvatars = ['🧑', '🦊', '🐸', '🐻', '🐼', '🦉'];
+  const ICONS = ['🥚', '🐦‍⬛', '🪶', '⚡'];
+  const ICON_NAMES = ['Egg', 'Crow', 'Feather', 'Bolt'];
+  const playerAvatars = ['🧑‍🚀', '🤖', '👾', '🧛', '🧙', '🦾'];
 
   const questions = {
     positive: ["What made you smile today?", "Who inspires you the most?", "What small pleasure do you really enjoy?", "What are you grateful for right now?", "What good thing happened this week?", "Who in your life makes you laugh the most?", "What beautiful thing did you see recently?", "What compliment really stayed with you?", "What happy memory do you treasure?"],
@@ -268,7 +522,7 @@
     plus2: { name: "+2", color: "dark", bgClass: "card-dark", action: "plus2", effect: "Next player draws 2 & loses turn" },
     skip: { name: "SKIP", color: "dark", bgClass: "card-dark", action: "skip", effect: "Skip next player" },
     swap: { name: "SWAP", color: "dark", bgClass: "card-dark", action: "swap", effect: "Swap your hand with another player" },
-    reverse: { name: "REVERSE", color: "dark", bgClass: "card-dark", action: "reverse", effect: "Reverse direction of play" }
+    reverse: { name: "REVERSE", color: "dark", bgClass: "card-dark", action: "reverse", effect: "Reverse direction" }
   };
 
   let deck = [], players = [], currentPlayerIndex = 0, direction = 1, currentTopCard = null, gameActive = true;
@@ -280,150 +534,92 @@
 
   function buildDeck() {
     let nd = [];
-    for (let cat of ['positive','future','reflective','competitive']) 
-      questions[cat].forEach(q => nd.push(createCard({ type:cat, ...cardTypes[cat], question:q })));
-    for (let i=0;i<3;i++) {
-      nd.push(createCard({ type:"plus2", ...cardTypes.plus2 }));
-      nd.push(createCard({ type:"skip", ...cardTypes.skip }));
-      nd.push(createCard({ type:"swap", ...cardTypes.swap }));
-      nd.push(createCard({ type:"reverse", ...cardTypes.reverse }));
-    }
+    for (let cat of ['positive','future','reflective','competitive']) questions[cat].forEach(q => nd.push(createCard({ type:cat, ...cardTypes[cat], question:q })));
+    for (let i=0;i<3;i++) { nd.push(createCard({ type:"plus2", ...cardTypes.plus2 }), createCard({ type:"skip", ...cardTypes.skip }), createCard({ type:"swap", ...cardTypes.swap }), createCard({ type:"reverse", ...cardTypes.reverse })); }
     return nd.sort(()=>Math.random()-0.5);
   }
 
   function canPlay(card) { return gameActive && !readingDelay && currentPlayerIndex===0 && (!currentTopCard || card.color===currentTopCard.color || card.iconSymbol===currentTopCard.iconSymbol); }
   
   function playCard(idx) {
-    if(!gameActive || readingDelay || currentPlayerIndex!==0) { showMessage("⏳ Not your turn or reading phase"); return; }
+    if(!gameActive || readingDelay || currentPlayerIndex!==0) { showMessage("⛔ NOT YOUR TURN / READING PHASE"); return; }
     const card = players[0].hand[idx];
-    if(!canPlay(card)) { showMessage(`❌ Need ${currentTopCard?.color} or ${currentTopCard?.iconSymbol} to match`); return; }
+    if(!canPlay(card)) { showMessage(`❌ NEED ${currentTopCard?.color} OR ${currentTopCard?.iconSymbol}`); return; }
     players[0].hand.splice(idx,1);
     handlePlayedCard(card,0);
-    if(players[0].hand.length===0) endGame("🏆 YOU WON! Incredible!");
+    if(players[0].hand.length===0) endGame("🏆 YOU WIN — NEON VICTORY!");
     else if(card.question) startReadingDelay();
     else advanceTurn();
     renderGame();
   }
 
   function handlePlayedCard(card, pIdx) {
-    playSound("card");
     currentTopCard = { color:card.color, iconSymbol:card.iconSymbol, iconName:card.iconName, name:card.name, question:card.question||null };
-    
-    // UPDATE MAIN DISPLAY WITH FULL QUESTION TEXT
     if(card.question) {
       lastQuestionCard = card;
       document.getElementById("currentIcon").textContent = card.iconSymbol;
-      document.getElementById("currentLabel").textContent = `📢 ${card.name} · ${card.iconName}`;
+      document.getElementById("currentLabel").textContent = `💬 ${card.name} · ${card.iconName}`;
       document.getElementById("currentQuestion").textContent = card.question;
       showQuestionModal(card);
-      showMessage(`💬 ${players[pIdx].name} asked: "${card.question}"`);
+      showMessage(`🌀 ${players[pIdx].name} asked: "${card.question.length>45?card.question.slice(0,45)+'…':card.question}"`);
     } else {
       document.getElementById("currentIcon").textContent = card.iconSymbol;
       document.getElementById("currentLabel").textContent = `⚡ ${card.name} · ACTION`;
-      document.getElementById("currentQuestion").textContent = card.effect || "Action card played!";
+      document.getElementById("currentQuestion").textContent = card.effect || "ACTION!";
       showMessage(`🎴 ${players[pIdx].name} played ${card.name}. ${card.effect || ''}`);
     }
-    
-    if(card.action==="plus2") { let target = nextPlayerIndex(); drawCards(target,2); currentPlayerIndex=target; showMessage(`➕ ${players[target].name} draws 2 and is skipped`); advanceTurn(); }
-    else if(card.action==="skip") { currentPlayerIndex = nextPlayerIndex(); showMessage(`⏭️ ${players[currentPlayerIndex].name} is skipped`); advanceTurn(); }
-    else if(card.action==="swap" && pIdx===0) { let target = (currentPlayerIndex+1)%players.length; let temp = [...players[0].hand]; players[0].hand = [...players[target].hand]; players[target].hand = temp; showMessage(`🔄 Swapped hands with ${players[target].name}`); }
-    else if(card.action==="reverse") { direction *= -1; showMessage(`🔄 Direction reversed`); }
+    if(card.action==="plus2") { let target = nextPlayerIndex(); drawCards(target,2); currentPlayerIndex=target; showMessage(`➕ ${players[target].name} draws 2 and skipped`); advanceTurn(); }
+    else if(card.action==="skip") { currentPlayerIndex = nextPlayerIndex(); showMessage(`⏭️ ${players[currentPlayerIndex].name} skipped`); advanceTurn(); }
+    else if(card.action==="swap" && pIdx===0) { let target = (currentPlayerIndex+1)%players.length; let temp = [...players[0].hand]; players[0].hand = [...players[target].hand]; players[target].hand = temp; showMessage(`🔄 SWAPPED with ${players[target].name}`); }
+    else if(card.action==="reverse") { direction *= -1; showMessage(`🔄 DIRECTION REVERSED`); }
   }
 
-  function startReadingDelay() { readingDelay=true; showMessage("📖 10 seconds to read the question..."); renderGame(); setTimeout(()=>{ if(!gameActive) return; startCountdownThenNextTurn(); },10000); }
-  
-  function startCountdownThenNextTurn() { 
-    if(!countdownEnabled) { readingDelay=false; advanceTurn(); renderGame(); return; } 
-    speakCountdown("3"); setTimeout(()=>speakCountdown("2"),1000); setTimeout(()=>speakCountdown("1"),2000); 
-    setTimeout(()=>{ readingDelay=false; showMessage("👉 Next player's turn!"); playSound("success"); advanceTurn(); renderGame(); },3000); 
-  }
-  
-  function advanceTurn() { if(!gameActive) return; currentPlayerIndex = nextPlayerIndex(); renderGame(); if(currentPlayerIndex!==0) setTimeout(()=>aiTurn(),550); }
+  function startReadingDelay() { readingDelay=true; showMessage("📖 10 sec to read the question"); renderGame(); setTimeout(()=>{ if(!gameActive) return; startCountdownThenNextTurn(); },10000); }
+  function startCountdownThenNextTurn() { if(!countdownEnabled) { readingDelay=false; advanceTurn(); renderGame(); return; } speakCountdown("3"); setTimeout(()=>speakCountdown("2"),1000); setTimeout(()=>speakCountdown("1"),2000); setTimeout(()=>{ readingDelay=false; showMessage("➡️ NEXT PLAYER"); advanceTurn(); renderGame(); },3000); }
+  function advanceTurn() { if(!gameActive) return; currentPlayerIndex = nextPlayerIndex(); renderGame(); if(currentPlayerIndex!==0) setTimeout(()=>aiTurn(),500); }
   function nextPlayerIndex() { return (currentPlayerIndex+direction+players.length)%players.length; }
   function drawCards(pid,amt) { for(let i=0;i<amt;i++) { if(deck.length===0) deck=buildDeck(); players[pid].hand.push(deck.pop()); } }
-  
   function aiTurn() {
     if(!gameActive || currentPlayerIndex===0) return;
     const ai=players[currentPlayerIndex];
     let idx = ai.hand.findIndex(c=>c.color===currentTopCard.color || c.iconSymbol===currentTopCard.iconSymbol);
-    if(idx!==-1){ 
-      let card=ai.hand.splice(idx,1)[0]; 
-      handlePlayedCard(card,currentPlayerIndex); 
-      if(ai.hand.length===0) endGame(`🏆 ${ai.name} won!`);
-      else if(card.question) startReadingDelay();
-      else advanceTurn();
-    }
-    else { drawCards(currentPlayerIndex,1); showMessage(`🤖 ${ai.name} drew a card.`); advanceTurn(); }
+    if(idx!==-1){ let card=ai.hand.splice(idx,1)[0]; handlePlayedCard(card,currentPlayerIndex); if(ai.hand.length===0) endGame(`🏆 ${ai.name} WON`); else if(card.question) startReadingDelay(); else advanceTurn(); }
+    else { drawCards(currentPlayerIndex,1); showMessage(`🤖 ${ai.name} drew a card`); advanceTurn(); }
     renderGame();
   }
-  
-  function endTurn(){ if(!gameActive||readingDelay||currentPlayerIndex!==0) showMessage("Wait your turn"); else { drawCards(0,1); playSound("draw"); showMessage("📤 Drew 1 card, turn ends."); advanceTurn(); renderGame(); } }
-  function sortHand(){ players[0].hand.sort((a,b)=> (a.color.localeCompare(b.color) || a.iconName.localeCompare(b.iconName))); renderGame(); }
-  
-  function showQuestionModal(card){
-    document.getElementById("modalIcon").textContent = card.iconSymbol;
-    document.getElementById("modalLabelText").textContent = `${card.name} · ${card.iconName}`;
-    document.getElementById("modalQuestion").textContent = card.question;
-    document.getElementById("questionModal").classList.add("show");
-    speakText(card.question);
-    setTimeout(()=> { if(document.getElementById("questionModal").classList.contains("show")) hideModal(); }, 12000);
-  }
-  
-  function showCurrentQuestionBig(){ if(lastQuestionCard) showQuestionModal(lastQuestionCard); else showMessage("No question card played yet — play one!"); }
+  function endTurn(){ if(!gameActive||readingDelay||currentPlayerIndex!==0) showMessage("NOT YOUR TURN"); else { drawCards(0,1); showMessage("📀 DRAW + END TURN"); advanceTurn(); renderGame(); } }
+  function sortHand(){ players[0].hand.sort((a,b)=> a.color.localeCompare(b.color) || a.iconName.localeCompare(b.iconName)); renderGame(); }
+  function showQuestionModal(card){ document.getElementById("modalIcon").textContent = card.iconSymbol; document.getElementById("modalLabelText").textContent = `${card.name} · ${card.iconName}`; document.getElementById("modalQuestion").textContent = card.question; document.getElementById("questionModal").classList.add("show"); speakText(card.question); setTimeout(()=> hideModal(), 12000); }
+  function showCurrentQuestionBig(){ if(lastQuestionCard) showQuestionModal(lastQuestionCard); else showMessage("No question card played yet"); }
   function closeQuestionModal(e){ if(e.target.id==="questionModal") hideModal(); }
   function hideModal(){ document.getElementById("questionModal").classList.remove("show"); }
-  
-  function speakText(t){ window.lastSpeech=t; if(!audioEnabled||!window.speechSynthesis) return; let u=new SpeechSynthesisUtterance(t); u.rate=0.9; u.lang="en-US"; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }
-  function speakCountdown(t){ if(audioEnabled && window.speechSynthesis){ let u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } else playSound("tick"); }
-  function repeatSpeech(){ if(!audioEnabled){showMessage("Enable voice in Setup"); return;} if(window.lastSpeech) speakText(window.lastSpeech); }
-  function toggleAudio(){ audioEnabled=!audioEnabled; document.getElementById("audioBtn").innerHTML=audioEnabled?"🔊 Voice ON":"🔇 Voice OFF"; if(!audioEnabled) window.speechSynthesis?.cancel(); showMessage(audioEnabled?"Voice ON - questions will be read aloud":"Voice OFF"); }
-  function toggleCountdown(){ countdownEnabled=!countdownEnabled; document.getElementById("countdownBtn").innerHTML=countdownEnabled?"⏱ Count ON":"⏱ Count OFF"; showMessage(countdownEnabled?"Countdown between turns ON":"Countdown OFF"); }
-  
-  function playSound(type){ try{ let ctx=new (window.AudioContext||window.webkitAudioContext)(); let freq={card:540,draw:320,success:880,tick:760}[type]||500; let o=ctx.createOscillator(); let g=ctx.createGain(); o.type="sine"; o.frequency.value=freq; g.gain.value=0.04; g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.09); setTimeout(()=>ctx.close(),150); }catch(e){} }
-  
+  function speakText(t){ window.lastSpeech=t; if(audioEnabled && window.speechSynthesis){ let u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } }
+  function speakCountdown(t){ if(audioEnabled && window.speechSynthesis){ let u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } }
+  function repeatSpeech(){ if(audioEnabled && window.lastSpeech) speakText(window.lastSpeech); else showMessage("Enable voice in setup"); }
+  function toggleAudio(){ audioEnabled=!audioEnabled; document.getElementById("audioBtn").innerHTML=audioEnabled?"🔊 VOICE ON":"🔇 VOICE OFF"; }
+  function toggleCountdown(){ countdownEnabled=!countdownEnabled; document.getElementById("countdownBtn").innerHTML=countdownEnabled?"⏱ COUNT ON":"⏱ COUNT OFF"; }
   function showMessage(txt){ document.getElementById("messageArea").textContent=txt; }
-  
-  function startTimer(){ clearInterval(gameTimer); gameTimer=setInterval(()=>{ if(!gameActive) return; if(timeLeft<=0) endGame("🎉 Time's up — fantastic game!"); else { timeLeft--; let mins=Math.floor(timeLeft/60), secs=timeLeft%60; document.getElementById("timer").textContent=`${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; } },1000); }
-  function setRoundLength(){ timeLeft=Number(document.getElementById("timerSelect").value); let mins=Math.floor(timeLeft/60),secs=timeLeft%60; document.getElementById("timer").textContent=`${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`; }
+  function startTimer(){ clearInterval(gameTimer); gameTimer=setInterval(()=>{ if(!gameActive) return; if(timeLeft<=0) endGame("⏰ TIME'S UP — GLORIOUS"); else { timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; document.getElementById("timer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; } },1000); }
+  function setRoundLength(){ timeLeft=parseInt(document.getElementById("timerSelect").value); let m=Math.floor(timeLeft/60), s=timeLeft%60; document.getElementById("timer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
   function toggleSettings(){ document.getElementById("settingsSheet").classList.toggle("show"); }
-  function applyPlayers(){ let names=document.getElementById("playerNamesInput").value.split(',').map(n=>n.trim()).filter(Boolean); if(names.length<2){ showMessage("Need at least 2 players"); return; } initGame(names); toggleSettings(); }
+  function applyPlayers(){ let names=document.getElementById("playerNamesInput").value.split(',').map(n=>n.trim()).filter(Boolean); if(names.length<2){ showMessage("≥2 players"); return; } initGame(names); toggleSettings(); }
   function restartGame(){ let names=players.length?players.map(p=>p.name):["You","P2","P3","P4"]; initGame(names); toggleSettings(); }
   function endGame(msg){ gameActive=false; clearInterval(gameTimer); showMessage(msg); document.getElementById("currentIcon").textContent="🏆"; document.getElementById("currentLabel").textContent="GAME OVER"; document.getElementById("currentQuestion").textContent=msg; renderGame(); }
-  
   function renderGame(){
     document.getElementById("directionLabel").innerHTML=direction===1?"↪":"↩";
     document.getElementById("playersGrid").innerHTML=players.map((p,i)=>`<div class="player-pill ${currentPlayerIndex===i && gameActive?'active':''}"><div class="avatar">${playerAvatars[i%playerAvatars.length]}</div><div class="player-name">${p.name}</div><div class="player-count">${p.hand.length}</div></div>`).join('');
-    if(currentTopCard){ 
-      let colorMap={yellow:'#F7DC6F',blue:'#5DADE2',green:'#A3E4A3',red:'#E74C3C',dark:'#2C3E50'}; 
-      let previewDiv=document.getElementById("topCardPreview"); 
-      previewDiv.style.background=colorMap[currentTopCard.color]; 
-      previewDiv.style.color=(currentTopCard.color==='red'||currentTopCard.color==='dark')?'white':'#111'; 
-      previewDiv.innerHTML=`${currentTopCard.iconSymbol} ${currentTopCard.name}`; 
-      document.getElementById("matchRule").innerHTML=`${currentTopCard.color.toUpperCase()}<br>${currentTopCard.iconSymbol}`;
-    }
-    let hand=players[0]?.hand||[]; 
-    let playableCount=hand.filter(canPlay).length; 
-    document.getElementById("handSubtitle").innerHTML=`${playableCount} playable · ${hand.length} total`;
-    document.getElementById("cardsContainer").innerHTML=hand.map((c,i)=>`<div class="game-card ${c.bgClass} ${canPlay(c)?'playable':'not-playable'}" onclick="playCard(${i})"><div class="card-status">${canPlay(c)?'▶ PLAY':'⏸'}</div><div class="card-icon">${c.iconSymbol}</div><div class="card-name">${c.name}</div>${c.question?`<div class="card-question">❝ ${c.question} ❞</div>`:''}${c.effect?`<div class="card-effect">⚡ ${c.effect}</div>`:''}</div>`).join('');
+    if(currentTopCard){ let colorMap={yellow:'#f9e45b',blue:'#2a9eff',green:'#00cc88',red:'#ff3366',dark:'#2f2f6f'}; let previewDiv=document.getElementById("topCardPreview"); previewDiv.style.background=colorMap[currentTopCard.color]; previewDiv.innerHTML=`${currentTopCard.iconSymbol} ${currentTopCard.name}`; document.getElementById("matchRule").innerHTML=`${currentTopCard.color.toUpperCase()}<br>${currentTopCard.iconSymbol}`; }
+    let hand=players[0]?.hand||[]; let playableCount=hand.filter(canPlay).length; document.getElementById("handSubtitle").innerHTML=`${playableCount} PLAYABLE · ${hand.length} TOTAL`;
+    document.getElementById("cardsContainer").innerHTML=hand.map((c,i)=>`<div class="game-card ${c.bgClass} ${canPlay(c)?'playable':'not-playable'}" onclick="playCard(${i})"><div class="card-status">${canPlay(c)?'⚡ PLAY':'⛔'}</div><div class="card-icon">${c.iconSymbol}</div><div class="card-name">${c.name}</div>${c.question?`<div class="card-question">❝ ${c.question} ❞</div>`:''}${c.effect?`<div class="card-effect">⚡ ${c.effect}</div>`:''}</div>`).join('');
   }
-  
   function initGame(names=["You","P2","P3","P4"]){
     deck=buildDeck(); players=names.map((n,i)=>({id:i,name:n,hand:[]})); currentPlayerIndex=0; direction=1; gameActive=true; readingDelay=false; lastQuestionCard=null;
     players.forEach((_,i)=>drawCards(i,5));
-    let first=deck.pop(); 
-    while(first?.action){ deck.unshift(first); first=deck.pop(); }
+    let first=deck.pop(); while(first?.action){ deck.unshift(first); first=deck.pop(); }
     currentTopCard={ color:first.color, iconSymbol:first.iconSymbol, iconName:first.iconName, name:first.name, question:first.question||null };
-    if(first.question){
-      document.getElementById("currentIcon").textContent = first.iconSymbol;
-      document.getElementById("currentLabel").textContent = `📢 ${first.name} · ${first.iconName}`;
-      document.getElementById("currentQuestion").textContent = first.question;
-      lastQuestionCard = first;
-    } else {
-      document.getElementById("currentIcon").textContent = first.iconSymbol;
-      document.getElementById("currentLabel").textContent = `${first.name} · start`;
-      document.getElementById("currentQuestion").textContent = first.effect || "Game started! Play a card.";
-    }
-    setRoundLength(); renderGame(); startTimer(); showMessage("✨ Tap a card with a gold border to play it — full question appears above!");
+    if(first.question){ document.getElementById("currentIcon").textContent=first.iconSymbol; document.getElementById("currentLabel").textContent=`${first.name} · ${first.iconName}`; document.getElementById("currentQuestion").textContent=first.question; lastQuestionCard=first; }
+    else { document.getElementById("currentIcon").textContent=first.iconSymbol; document.getElementById("currentLabel").textContent=`${first.name} · START`; document.getElementById("currentQuestion").textContent="Play a card to begin the conversation."; }
+    setRoundLength(); renderGame(); startTimer(); showMessage("💠 NEON MODE ACTIVE. PLAYABLE CARDS GLOW GREEN.");
   }
   initGame();
 </script>
