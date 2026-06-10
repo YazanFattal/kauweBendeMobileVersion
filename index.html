@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Kauwe Bende · Dark Edition</title>
-  <!-- Crow Favicon (SVG + data URI fallback) -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Kauwe Bende · Mobile Conversation Game</title>
+  <!-- Crow Favicon (SVG) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%231a2f1f' stroke='%23e6c87a' stroke-width='1.5' d='M30,40 Q25,30 35,25 Q40,22 45,28 L48,32 Q52,28 58,30 Q65,33 62,42 L58,48 L52,55 L48,58 L44,55 L38,48 Z' /%3E%3Ccircle cx='42' cy='38' r='3' fill='%23f5d742'/%3E%3Ccircle cx='58' cy='38' r='3' fill='%23f5d742'/%3E%3Cpath d='M45,45 L55,45' stroke='%23332211' stroke-width='2' /%3E%3C/svg%3E">
   <style>
     * {
@@ -12,594 +12,624 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
     }
 
     :root {
-      --bg-deep: #0d1117;
-      --bg-surface: #161b22;
-      --border-subtle: #2d333b;
-      --text-primary: #e6edf3;
-      --text-secondary: #8b949e;
-      --accent-gold: #e6c87a;
-      --accent-gold-glow: rgba(230, 200, 122, 0.25);
-      --card-pink: #c297b8;
-      --card-blue: #8ab3cf;
-      --card-green: #9ec9a0;
-      --card-red: #d47c7a;
-      --card-dark: #2d333b;
-      --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
-      --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      left: 0;
-      background-color: var(--bg-deep);
+      --bg-dark: #0c0a1a;
+      --bg-card: #1e1935;
+      --gold: #f5c542;
+      --positive: #ffd966;
+      --future: #4aa3ff;
+      --reflective: #6fcf97;
+      --competitive: #e66767;
+      --text-light: #f0eef7;
+      --text-dim: #b9b3e0;
     }
 
     body {
-      font-family: var(--font-sans);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(ellipse at 20% 40%, #161c24, #0a0e12);
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Poppins', 'Baloo 2', cursive;
+      background: radial-gradient(circle at 20% 10%, #1a1335, #0a0718);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* main container - no scroll */
-    .app {
-      width: 100%;
-      max-width: 540px;
-      height: 100%;
+    /* Mobile-first container */
+    .app-container {
+      max-width: 550px;
       margin: 0 auto;
-      padding: 0.7rem 0.7rem 0.6rem;
+      padding: 16px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      overflow: hidden;
     }
 
-    /* Top bar minimalist */
-    .top-bar {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(22, 27, 34, 0.85);
-      backdrop-filter: blur(8px);
+    /* Screens */
+    .screen {
+      display: none;
+      flex: 1;
+      animation: fadeIn 0.25s ease;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Guide (welcome) */
+    .guide-card {
+      background: rgba(30, 25, 53, 0.75);
+      backdrop-filter: blur(12px);
       border-radius: 2rem;
-      padding: 0.35rem 0.9rem;
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-top: 1rem;
+      border: 1px solid rgba(245, 197, 66, 0.3);
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5);
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
     .logo {
-      width: 36px;
-      height: 36px;
-      background: #1e2a24;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      font-size: 1.4rem;
-      border: 1px solid var(--accent-gold);
-      box-shadow: 0 0 4px var(--accent-gold-glow);
+      width: 100px;
+      margin: 0 auto 1rem;
+      display: block;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     }
-
-    .brand h1 {
-      font-size: 1rem;
+    .logo-small {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+    .title {
+      font-size: 1.85rem;
       font-weight: 700;
-      letter-spacing: -0.2px;
-      color: var(--text-primary);
-    }
-
-    .brand p {
-      font-size: 0.6rem;
-      color: var(--accent-gold);
-      opacity: 0.8;
-    }
-
-    .timer {
-      background: #0d1117cc;
-      padding: 0.3rem 0.8rem;
-      border-radius: 2rem;
-      font-weight: 700;
-      font-size: 0.9rem;
-      font-family: monospace;
-      color: var(--accent-gold);
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* panels */
-    .section {
-      background: rgba(22, 27, 34, 0.7);
-      backdrop-filter: blur(4px);
-      border: 1px solid var(--border-subtle);
-      border-radius: 1.25rem;
-      padding: 0.55rem;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      font-weight: 600;
-      margin-bottom: 0.45rem;
-      color: var(--text-secondary);
-      letter-spacing: 0.3px;
-    }
-
-    .players-strip {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      padding-bottom: 0.2rem;
-    }
-
-    .player-pill {
-      flex: 0 0 auto;
-      min-width: 76px;
-      background: #21262d;
-      border-radius: 1rem;
-      padding: 0.4rem 0.3rem;
       text-align: center;
-      border: 1px solid #30363d;
-      transition: all 0.1s;
+      background: linear-gradient(135deg, #f5c542, #e6a017);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
     }
-
-    .player-pill.active {
-      border-color: var(--accent-gold);
-      background: #2d333b;
-      box-shadow: 0 0 8px var(--accent-gold-glow);
-    }
-
-    .avatar { font-size: 1.2rem; opacity: 0.9; }
-    .player-name { font-size: 0.68rem; font-weight: 600; color: #e6edf3; }
-    .player-count { font-size: 0.6rem; background: #3d424a; display: inline-block; padding: 0.1rem 0.45rem; border-radius: 1rem; color: #fff; margin-top: 0.15rem; }
-
-    /* current question card – calm, readable */
-    .current-question-card {
-      background: #1a1f26;
-      border-radius: 1.25rem;
-      padding: 0.7rem;
-      min-height: 104px;
+    .language-row {
       display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      border-left: 4px solid var(--accent-gold);
-      border-right: 1px solid var(--border-subtle);
-      border-top: 1px solid var(--border-subtle);
-      border-bottom: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-sm);
-      flex-shrink: 0;
-    }
-
-    .left-icon {
-      font-size: 2.4rem;
-      background: #21262d;
-      border-radius: 1.2rem;
-      width: 54px;
-      height: 54px;
-      display: flex;
-      align-items: center;
+      gap: 12px;
       justify-content: center;
-      border: 1px solid #3b434c;
+      margin: 1rem 0;
     }
-
-    .question-content { flex: 1; text-align: left; }
-    .current-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      background: #2d333b;
-      display: inline-block;
-      padding: 0.2rem 0.7rem;
-      border-radius: 1rem;
-      color: var(--accent-gold);
-      margin-bottom: 0.25rem;
-    }
-    .current-question {
+    .lang-btn {
+      background: #2a2348;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: white;
       font-size: 0.9rem;
-      line-height: 1.3;
-      font-weight: 500;
-      word-break: break-word;
-      color: #e6edf3;
-    }
-
-    /* match row  */
-    .match-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
-    }
-    .mini-card {
-      background: #161b22cc;
-      border-radius: 1rem;
-      padding: 0.4rem;
-      text-align: center;
-      border: 1px solid var(--border-subtle);
-    }
-    .mini-title { font-size: 0.6rem; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.3px; }
-    .top-card-preview {
-      background: #21262d;
-      border-radius: 0.9rem;
-      padding: 0.3rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      color: var(--accent-gold);
-    }
-    .match-rule { font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); }
-
-    .message {
-      background: #0d1117cc;
-      border-radius: 1rem;
-      padding: 0.45rem;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-align: center;
-      border-left: 3px solid var(--accent-gold);
-      flex-shrink: 0;
-    }
-
-    /* hand section */
-    .hand-section { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.2rem; }
-    .hand-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 0 0.2rem;
-    }
-    .hand-title { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
-    .hand-subtitle { font-size: 0.6rem; color: var(--text-secondary); }
-    .small-btn {
-      background: #21262d;
-      border: 1px solid #30363d;
-      border-radius: 2rem;
-      padding: 0.2rem 0.7rem;
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: #e6edf3;
       cursor: pointer;
-      transition: 0.05s linear;
+      transition: 0.1s;
     }
-    .small-btn:active { background: #3d444d; }
-
-    .hand-scroll {
+    .lang-btn:active { transform: scale(0.96); background: #3d3468; }
+    .rule-box {
+      background: rgba(0,0,0,0.35);
+      border-radius: 1.2rem;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .rule-item {
+      margin: 0.6rem 0;
+      font-size: 0.85rem;
       display: flex;
-      gap: 0.6rem;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 0.3rem;
+      gap: 10px;
+      align-items: center;
+    }
+    .rule-bullet {
+      width: 24px;
+      height: 24px;
+      background: var(--gold);
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1335;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+    .btn-primary {
+      background: linear-gradient(95deg, #f5c542, #e6a017);
+      border: none;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 60px;
+      color: #1e1a2f;
+      cursor: pointer;
+      transition: 0.08s linear;
+      margin-top: 8px;
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Game screen */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      padding: 0.6rem 1rem;
+      border-radius: 60px;
+      backdrop-filter: blur(8px);
+    }
+    .game-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hidden-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1rem 0 2rem;
+    }
+    /* category cards as vertical stack for mobile */
+    .hidden-card-mobile {
+      background: #1e1935cc;
+      backdrop-filter: blur(4px);
+      border-radius: 1.5rem;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-left: 6px solid;
+      cursor: pointer;
+      transition: 0.1s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .hidden-card-mobile:active { transform: scale(0.98); background: #2a234f; }
+    .card-icon-mobile {
+      font-size: 2.2rem;
+      width: 55px;
+      text-align: center;
+    }
+    .card-info {
       flex: 1;
     }
-
-    /* Cards - muted tones, less intense */
-    .game-card {
-      flex: 0 0 164px;
-      scroll-snap-align: start;
-      border-radius: 1.1rem;
-      padding: 0.6rem 0.5rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      position: relative;
-      border-bottom: 3px solid rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: transform 0.05s, box-shadow 0.1s;
-      height: 180px;
-      overflow-y: auto;
-      background: #21262d;
-      color: #e6edf3;
+    .card-category {
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.3px;
     }
-    .game-card::-webkit-scrollbar { width: 2px; }
-    .game-card:active { transform: scale(0.97); }
-    .card-status {
-      position: absolute;
-      top: 0.3rem;
-      right: 0.5rem;
-      background: #0d1117cc;
-      font-size: 0.55rem;
-      padding: 0.1rem 0.45rem;
-      border-radius: 1rem;
-      font-weight: 700;
-    }
-    .card-icon { font-size: 1.6rem; }
-    .card-name { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
-    .card-question {
-      font-size: 0.68rem;
-      font-weight: 500;
-      line-height: 1.25;
-      word-break: break-word;
-      margin-top: 0.2rem;
-      background: rgba(0,0,0,0.2);
-      padding: 0.2rem;
-      border-radius: 0.6rem;
-    }
-    .card-effect { font-size: 0.6rem; font-weight: 600; margin-top: 0.1rem; border-top: 1px solid #3b434c; padding-top: 0.2rem; }
-
-    /* Card type backgrounds (soft, readable) */
-    .card-yellow { background: #3a3520; border-bottom-color: #b89e4a; color: #f0e6c5; }
-    .card-blue { background: #1f384b; border-bottom-color: #5f8ab0; color: #cddcec; }
-    .card-green { background: #1f3a2a; border-bottom-color: #6f9e7c; color: #cfebd6; }
-    .card-red { background: #4a2626; border-bottom-color: #b46868; color: #f5d0d0; }
-    .card-dark { background: #252b33; border-bottom-color: #5c6570; color: #e6edf3; }
-
-    .playable { outline: 2px solid var(--accent-gold); box-shadow: 0 0 0 1px rgba(230,200,122,0.2); filter: brightness(1.02); }
-    .not-playable { opacity: 0.55; filter: grayscale(0.15); }
-
-    .bottom-controls {
-      flex-shrink: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.6rem;
-      padding: 0.2rem 0;
-    }
-    .main-btn {
-      border: none;
-      border-radius: 2rem;
-      padding: 0.5rem 0.2rem;
-      font-weight: 700;
+    .card-preview {
       font-size: 0.75rem;
-      background: #2d333b;
-      color: #e6edf3;
-      cursor: pointer;
-      transition: 0.05s linear;
-      border: 1px solid #3b434c;
+      opacity: 0.8;
+      margin-top: 4px;
     }
-    .main-btn.secondary {
-      background: #1a1f26;
-      border-color: #3b434c;
-    }
-    .main-btn:active { transform: scale(0.96); background: #3d444d; }
+    .positive-border { border-left-color: var(--positive); }
+    .future-border { border-left-color: var(--future); }
+    .reflective-border { border-left-color: var(--reflective); }
+    .competitive-border { border-left-color: var(--competitive); }
+    .positive-text { color: var(--positive); }
+    .future-text { color: var(--future); }
+    .reflective-text { color: var(--reflective); }
+    .competitive-text { color: var(--competitive); }
 
-    /* modal clean */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+    /* Question reveal screen */
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
     }
-    .modal.show { display: flex; }
-    .modal-card {
-      width: 88%;
-      max-width: 340px;
-      background: #1a1f26;
-      border-radius: 1.8rem;
-      padding: 1.2rem;
+    .question-card-big {
+      background: linear-gradient(145deg, #2a2350, #191432);
+      border-radius: 2rem;
+      padding: 2rem 1.5rem;
       text-align: center;
-      border: 1px solid var(--accent-gold);
-      box-shadow: 0 12px 28px black;
+      margin: 1rem 0 2rem;
+      border: 1px solid rgba(245,197,66,0.4);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+      transform-style: preserve-3d;
+      animation: floatUp 0.4s ease;
     }
-    .modal-icon { font-size: 2.5rem; }
-    .modal-label { background: #2d333b; color: var(--accent-gold); display: inline-block; padding: 0.2rem 1rem; border-radius: 2rem; font-weight: 600; margin: 0.4rem 0; }
-    .modal-question { font-size: 1.2rem; font-weight: 500; margin: 0.7rem 0; line-height: 1.3; color: #e6edf3; }
-    .modal-actions { display: flex; gap: 0.6rem; justify-content: center; margin-top: 0.8rem; }
+    @keyframes floatUp {
+      0% { opacity: 0; transform: translateY(20px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+    .category-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 40px;
+      background: #00000044;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+    }
+    .question-text {
+      font-size: 1.6rem;
+      line-height: 1.3;
+      font-weight: 700;
+      margin: 1rem 0;
+      word-break: break-word;
+    }
+    .next-btn {
+      background: #2c2555;
+      border: 1px solid #f5c542;
+      width: 100%;
+      padding: 14px;
+      border-radius: 60px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+    }
 
-    .settings-sheet {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #161b22e6;
-      backdrop-filter: blur(12px);
-      border-radius: 1.2rem 1.2rem 0 0;
-      padding: 1rem;
-      transform: translateY(105%);
-      transition: 0.2s;
-      z-index: 90;
-      border-top: 1px solid var(--accent-gold);
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
     }
-    .settings-sheet.show { transform: translateY(0); }
-    .field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; font-weight: 600; color: #e6edf3; font-size: 0.75rem; }
-    input, select { padding: 0.6rem; border-radius: 1rem; border: none; background: #0d1117; color: white; font-weight: 500; outline: none; border: 1px solid #30363d; }
+    .back-btn {
+      background: rgba(255,255,255,0.12);
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    footer {
+      font-size: 0.7rem;
+      text-align: center;
+      margin-top: 1rem;
+      opacity: 0.6;
+    }
+    @media (min-width: 480px) {
+      .hidden-cards-grid {
+        gap: 1.2rem;
+      }
+      .question-text {
+        font-size: 1.8rem;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="app">
-  <div class="top-bar">
-    <div class="brand">
-      <div class="logo">🐦‍⬛</div>
-      <div><h1>Kauwe Bende</h1><p>dark · quiet flow</p></div>
+<div class="app-container" id="appRoot">
+  <!-- GUIDE SCREEN (WELCOME) -->
+  <div id="guideScreen" class="screen active">
+    <div class="guide-card">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='%23f5c542' d='M100,30 L120,70 L165,75 L130,105 L140,148 L100,128 L60,148 L70,105 L35,75 L80,70 Z'/%3E%3C/svg%3E" alt="crow" class="logo">
+      <h1 class="title" id="guideTitle">Kauwe Bende</h1>
+      <div class="language-row">
+        <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="setLanguage('nl')">🇳🇱 Nederlands</button>
+      </div>
+      <p id="guideDesc" style="text-align:center; margin-bottom:1rem;">A playful conversation game. Reveal hidden questions & connect.</p>
+      <div class="rule-box">
+        <div class="rule-item"><span class="rule-bullet">1</span><span id="rule1Txt">Choose a language and start the game.</span></div>
+        <div class="rule-item"><span class="rule-bullet">2</span><span id="rule2Txt">The question stays hidden until the card is revealed.</span></div>
+        <div class="rule-item"><span class="rule-bullet">3</span><span id="rule3Txt">After each round, the next category is chosen randomly.</span></div>
+        <div class="rule-item"><span class="rule-bullet">4</span><span id="rule4Txt">Be honest, respectful, and have fun.</span></div>
+      </div>
+      <button class="btn-primary" onclick="startGame()">✨ Start Game ✨</button>
     </div>
-    <div class="timer" id="timer">20:00</div>
+    <footer>🐦‍⬛ Kauwe Bende — share & enjoy</footer>
   </div>
 
-  <div class="section">
-    <div class="section-title"><span>👥 players</span><span id="directionLabel">↪</span></div>
-    <div class="players-strip" id="playersGrid"></div>
-  </div>
-
-  <div class="current-question-card">
-    <div class="left-icon" id="currentIcon">🎴</div>
-    <div class="question-content">
-      <div class="current-label" id="currentLabel">current question</div>
-      <div class="current-question" id="currentQuestion">play a card to begin the conversation</div>
+  <!-- GAME SCREEN (CATEGORY SELECTION) -->
+  <div id="gameScreen" class="screen">
+    <div class="game-header">
+      <div class="game-title">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f5c542' d='M30,40 Q25,30 35,25 Q40,22 45,28 L48,32 Q52,28 58,30 Q65,33 62,42 L58,48 L52,55 L48,58 L44,55 L38,48 Z'/%3E%3C/svg%3E" width="28" height="28" style="filter:drop-shadow(0 0 2px gold)"> 
+        <span>Kauwe Bende</span>
+      </div>
+      <button class="back-btn" onclick="goToGuideFromGame()">🏠 Exit</button>
     </div>
-  </div>
-
-  <div class="match-row">
-    <div class="mini-card"><div class="mini-title">top card</div><div class="top-card-preview" id="topCardPreview">—</div></div>
-    <div class="mini-card"><div class="mini-title">match rule</div><div class="match-rule" id="matchRule">color / icon</div></div>
-  </div>
-
-  <div class="message" id="messageArea">✨ tap a highlighted card to play — matching color or icon</div>
-
-  <div class="hand-section">
-    <div class="hand-header">
-      <div><div class="hand-title">🎴 your hand</div><div class="hand-subtitle" id="handSubtitle">0 playable</div></div>
-      <button class="small-btn" onclick="sortHand()">sort</button>
+    <h2 id="gameSubtitle" style="font-size:1.2rem; margin:0 0 0.5rem 0;">Choose a hidden card</h2>
+    <div id="categoriesContainer" class="hidden-cards-grid">
+      <!-- Dynamic categories injected -->
     </div>
-    <div class="hand-scroll" id="cardsContainer"></div>
+    <p style="font-size:0.75rem; text-align:center; margin-top:0.5rem;">👇 tap a card to reveal the question</p>
   </div>
 
-  <div class="bottom-controls">
-    <button class="main-btn secondary" onclick="toggleSettings()">⚙️ setup</button>
-    <button class="main-btn" onclick="endTurn()">📖 draw card</button>
-    <button class="main-btn secondary" onclick="showCurrentQuestionBig()">🔍 zoom</button>
-  </div>
-</div>
-
-<div class="modal" id="questionModal" onclick="closeQuestionModal(event)">
-  <div class="modal-card">
-    <div class="modal-icon" id="modalIcon">🎴</div>
-    <div class="modal-label" id="modalLabelText">question</div>
-    <div class="modal-question" id="modalQuestion"></div>
-    <div class="modal-actions">
-      <button class="main-btn secondary" onclick="repeatSpeech()">🔊 listen</button>
-      <button class="main-btn" onclick="hideModal()">continue</button>
+  <!-- QUESTION SCREEN (REVEALED QUESTION) -->
+  <div id="questionScreen" class="screen">
+    <div class="question-header">
+      <button class="back-btn" onclick="backToCategories()">← Back</button>
+      <button class="back-btn" onclick="fullExitToGuide()">Exit</button>
     </div>
+    <div class="question-card-big">
+      <div class="category-badge" id="questionCatBadge">Positive</div>
+      <div class="question-text" id="questionTextDisplay">✨ Your question appears here ✨</div>
+    </div>
+    <button class="next-btn" id="nextRoundBtn" onclick="nextRandomCategory()">🎲 Next Random Category</button>
   </div>
-</div>
-
-<div class="settings-sheet" id="settingsSheet">
-  <div class="section-title"><span>⚙️ preferences</span><button class="small-btn" onclick="toggleSettings()">close</button></div>
-  <label class="field">round length <select id="timerSelect"><option value="600">10 min</option><option value="900">15 min</option><option value="1200" selected>20 min</option><option value="1800">30 min</option></select></label>
-  <label class="field">player names (comma) <input id="playerNamesInput" value="You, Player 2, Player 3, Player 4"/></label>
-  <div class="modal-actions"><button class="main-btn" onclick="applyPlayers()">apply</button><button class="main-btn secondary" onclick="restartGame()">restart</button></div>
-  <div class="modal-actions"><button class="main-btn secondary" id="audioBtn" onclick="toggleAudio()">🔇 voice off</button><button class="main-btn secondary" id="countdownBtn" onclick="toggleCountdown()">⏱ count on</button></div>
 </div>
 
 <script>
-  const ICONS = ['🥚', '🐦‍⬛', '🪶', '🪵'];
-  const ICON_NAMES = ['Egg', 'Crow', 'Feather', 'Stick'];
-  const playerAvatars = ['🧑', '🦊', '🐸', '🐻', '🐼', '🦉'];
+  // ---------- GAME DATA (identical to original but mobile) ----------
+  let currentLanguage = "en";
 
-  const questions = {
-    positive: ["What made you smile today?","Who inspires you most?","A small pleasure you enjoy?","What are you grateful for?","Something good this week?","Who makes you laugh?","Beautiful thing you saw?","A compliment that stayed?","Happy memory you treasure?"],
-    future: ["What dream are you working toward?","In five years?","Skill you'd love to learn?","If money didn't matter?","Place you want to visit?","Perfect normal day?","Goal delayed too long?","Who do you want to become?","Goal for next year?"],
-    reflective: ["Lesson life taught you?","To your younger self?","Changed your mind about?","Challenge that made you stronger?","Proudest moment?","Mistake that taught value?","How changed in past year?","What you wish you knew earlier?","Best advice received?"],
-    competitive: ["Skill you're best at?","Hidden talent?","Game you almost always win?","What could you teach?","Personal superpower?","Sport you're good at?","Faster than most?","Competition you've won?","Weirdly good at?"]
-  };
-
-  const cardTypes = {
-    positive: { name: "POSITIVE", color: "yellow", bgClass: "card-yellow" },
-    future: { name: "FUTURE", color: "blue", bgClass: "card-blue" },
-    reflective: { name: "REFLECT", color: "green", bgClass: "card-green" },
-    competitive: { name: "COMPETE", color: "red", bgClass: "card-red" },
-    plus2: { name: "+2", color: "dark", bgClass: "card-dark", action: "plus2", effect: "next player draws 2 & loses turn" },
-    skip: { name: "SKIP", color: "dark", bgClass: "card-dark", action: "skip", effect: "skip next player" },
-    swap: { name: "SWAP", color: "dark", bgClass: "card-dark", action: "swap", effect: "swap hands with another player" },
-    reverse: { name: "REVERSE", color: "dark", bgClass: "card-dark", action: "reverse", effect: "reverse direction" }
-  };
-
-  let deck = [], players = [], currentPlayerIndex = 0, direction = 1, currentTopCard = null, gameActive = true;
-  let timeLeft = 1200, gameTimer = null, readingDelay = false, lastQuestionCard = null;
-  let audioEnabled = false, countdownEnabled = true;
-
-  function getRandomIcon() { const i = Math.floor(Math.random() * ICONS.length); return { symbol: ICONS[i], name: ICON_NAMES[i] }; }
-  function createCard(template) { const icon = getRandomIcon(); return { ...template, iconSymbol: icon.symbol, iconName: icon.name }; }
-
-  function buildDeck() {
-    let nd = [];
-    for (let cat of ['positive','future','reflective','competitive']) questions[cat].forEach(q => nd.push(createCard({ type:cat, ...cardTypes[cat], question:q })));
-    for (let i=0;i<3;i++) { nd.push(createCard({ type:"plus2", ...cardTypes.plus2 }), createCard({ type:"skip", ...cardTypes.skip }), createCard({ type:"swap", ...cardTypes.swap }), createCard({ type:"reverse", ...cardTypes.reverse })); }
-    return nd.sort(()=>Math.random()-0.5);
-  }
-
-  function canPlay(card) { return gameActive && !readingDelay && currentPlayerIndex===0 && (!currentTopCard || card.color===currentTopCard.color || card.iconSymbol===currentTopCard.iconSymbol); }
-  
-  function playCard(idx) {
-    if(!gameActive || readingDelay || currentPlayerIndex!==0) { showMessage("⏳ not your turn · reading phase"); return; }
-    const card = players[0].hand[idx];
-    if(!canPlay(card)) { showMessage(`❌ need ${currentTopCard?.color} or ${currentTopCard?.iconSymbol}`); return; }
-    players[0].hand.splice(idx,1);
-    handlePlayedCard(card,0);
-    if(players[0].hand.length===0) endGame("🏆 you won · great connections");
-    else if(card.question) startReadingDelay();
-    else advanceTurn();
-    renderGame();
-  }
-
-  function handlePlayedCard(card, pIdx) {
-    currentTopCard = { color:card.color, iconSymbol:card.iconSymbol, iconName:card.iconName, name:card.name, question:card.question||null };
-    if(card.question) {
-      lastQuestionCard = card;
-      document.getElementById("currentIcon").textContent = card.iconSymbol;
-      document.getElementById("currentLabel").textContent = `${card.name} · ${card.iconName}`;
-      document.getElementById("currentQuestion").textContent = card.question;
-      showQuestionModal(card);
-      showMessage(`💬 ${players[pIdx].name} asked: "${card.question}"`);
-    } else {
-      document.getElementById("currentIcon").textContent = card.iconSymbol;
-      document.getElementById("currentLabel").textContent = `${card.name} · action`;
-      document.getElementById("currentQuestion").textContent = card.effect || "action card";
-      showMessage(`🎴 ${players[pIdx].name} played ${card.name}. ${card.effect || ''}`);
+  const questionsDB = {
+    en: {
+      Positive: [
+        "What made you smile recently?",
+        "Who is someone you appreciate a lot?",
+        "What is your favorite memory this year?",
+        "What small act of kindness made your day?",
+        "What are you grateful for today?"
+      ],
+      Future: [
+        "Where do you see yourself in 5 years?",
+        "What country would you love to live in?",
+        "What is your dream job?",
+        "What skill do you want to master?",
+        "What does success look like to you?"
+      ],
+      Reflective: [
+        "What is something people misunderstand about you?",
+        "What challenge changed you the most?",
+        "What are you afraid of losing?",
+        "What lesson took you years to learn?",
+        "What would you tell your younger self?"
+      ],
+      Competitive: [
+        "Who would survive longest in a zombie apocalypse?",
+        "Convince everyone you are secretly famous.",
+        "Roast yourself in 10 seconds.",
+        "What's a fun competition you'd definitely win?",
+        "What's your hidden superpower?"
+      ]
+    },
+    nl: {
+      Positive: [
+        "Wat of iemand maakt je altijd blij?",
+        "Wat maakte je de afgelopen week blij?",
+        "Waar ben je nu beter in dan een jaar geleden?",
+        "Op welk talent ben je trots?",
+        "Wat is een recente overwinning waar je trots op bent?"
+      ],
+      Future: [
+        "Hoe zou jouw ideale toekomst eruitzien?",
+        "Wat betekent succes voor jou?",
+        "Welke vaardigheid zou je graag willen leren?",
+        "Hoe zou je ideale weekend eruitzien?",
+        "Waar wil je je zelfverzekerder in voelen?"
+      ],
+      Reflective: [
+        "Waarover ben je van gedachten veranderd?",
+        "Wat zou je willen dat mensen beter over je begrepen?",
+        "Waar ben je hoopvol over?",
+        "Welke eigenschappen waardeer je in vriendschap?",
+        "Wat helpt je om te kalmeren als je gestrest bent?"
+      ],
+      Competitive: [
+        "Is competitie motiverend of stressvol?",
+        "Welk socialmediaplatform is het ergst?",
+        "Zijn memes kunst of rommel?",
+        "Wat is belangrijker: met wie je bent of wat je doet?",
+        "Wat is moeilijker: ergens aan beginnen of iets afmaken?"
+      ]
     }
-    if(card.action==="plus2") { let target = nextPlayerIndex(); drawCards(target,2); currentPlayerIndex=target; showMessage(`➕ ${players[target].name} draws 2 & skip`); advanceTurn(); }
-    else if(card.action==="skip") { currentPlayerIndex = nextPlayerIndex(); showMessage(`⏭️ ${players[currentPlayerIndex].name} skipped`); advanceTurn(); }
-    else if(card.action==="swap" && pIdx===0) { let target = (currentPlayerIndex+1)%players.length; let temp = [...players[0].hand]; players[0].hand = [...players[target].hand]; players[target].hand = temp; showMessage(`🔄 swapped with ${players[target].name}`); }
-    else if(card.action==="reverse") { direction *= -1; showMessage(`🔄 direction reversed`); }
+  };
+
+  const translations = {
+    en: {
+      guideTitle: "Kauwe Bende",
+      guideDesc: "A playful conversation game where players answer hidden questions, switch categories, and discover social challenges.",
+      rule1: "Choose a language and start the game.",
+      rule2: "The question stays hidden until the card is revealed.",
+      rule3: "After each round, the next category is chosen randomly.",
+      rule4: "Be honest, respectful, and have fun.",
+      gameSubtitle: "Tap a hidden card to reveal a deep question",
+      positiveLabel: "Positive",
+      futureLabel: "Future",
+      reflectiveLabel: "Reflective",
+      competitiveLabel: "Competitive",
+      hiddenHint: "Tap to reveal",
+      nextButton: "Next Random Category"
+    },
+    nl: {
+      guideTitle: "Kauwe Bende",
+      guideDesc: "Een speels gespreksspel waarin spelers verborgen vragen beantwoorden, van categorie wisselen en sociale uitdagingen ontdekken.",
+      rule1: "Kies een taal en start het spel.",
+      rule2: "De vraag blijft verborgen totdat de kaart wordt onthuld.",
+      rule3: "Na elke ronde wordt automatisch een nieuwe categorie gekozen.",
+      rule4: "Wees eerlijk, respectvol en heb plezier.",
+      gameSubtitle: "Tik op een verborgen kaart om een vraag te onthullen",
+      positiveLabel: "Positief",
+      futureLabel: "Toekomst",
+      reflectiveLabel: "Reflectief",
+      competitiveLabel: "Competitief",
+      hiddenHint: "Tik om te onthullen",
+      nextButton: "Volgende willekeurige categorie"
+    }
+  };
+
+  // Helper: get random question
+  function getRandomQuestion(category) {
+    const arr = questionsDB[currentLanguage][category];
+    if (!arr || arr.length === 0) return "✨ Reflect & share ✨";
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function startReadingDelay() { readingDelay=true; showMessage("📖 10 seconds to read the question"); renderGame(); setTimeout(()=>{ if(!gameActive) return; startCountdownThenNextTurn(); },10000); }
-  function startCountdownThenNextTurn() { if(!countdownEnabled) { readingDelay=false; advanceTurn(); renderGame(); return; } setTimeout(()=>{ readingDelay=false; showMessage("➡️ next player's turn"); advanceTurn(); renderGame(); },2000); }
-  function advanceTurn() { if(!gameActive) return; currentPlayerIndex = nextPlayerIndex(); renderGame(); if(currentPlayerIndex!==0) setTimeout(()=>aiTurn(),550); }
-  function nextPlayerIndex() { return (currentPlayerIndex+direction+players.length)%players.length; }
-  function drawCards(pid,amt) { for(let i=0;i<amt;i++) { if(deck.length===0) deck=buildDeck(); players[pid].hand.push(deck.pop()); } }
-  function aiTurn() {
-    if(!gameActive || currentPlayerIndex===0) return;
-    const ai=players[currentPlayerIndex];
-    let idx = ai.hand.findIndex(c=>c.color===currentTopCard.color || c.iconSymbol===currentTopCard.iconSymbol);
-    if(idx!==-1){ let card=ai.hand.splice(idx,1)[0]; handlePlayedCard(card,currentPlayerIndex); if(ai.hand.length===0) endGame(`🏆 ${ai.name} won!`); else if(card.question) startReadingDelay(); else advanceTurn(); }
-    else { drawCards(currentPlayerIndex,1); showMessage(`🤖 ${ai.name} drew a card`); advanceTurn(); }
-    renderGame();
+  // Update UI text for guide & game
+  function updateUITexts() {
+    const t = translations[currentLanguage];
+    document.getElementById("guideTitle").innerText = t.guideTitle;
+    document.getElementById("guideDesc").innerText = t.guideDesc;
+    document.getElementById("rule1Txt").innerText = t.rule1;
+    document.getElementById("rule2Txt").innerText = t.rule2;
+    document.getElementById("rule3Txt").innerText = t.rule3;
+    document.getElementById("rule4Txt").innerText = t.rule4;
+    if (document.getElementById("gameSubtitle"))
+      document.getElementById("gameSubtitle").innerText = t.gameSubtitle;
+    const nextBtn = document.getElementById("nextRoundBtn");
+    if (nextBtn) nextBtn.innerText = t.nextButton;
+    
+    // re-render categories if gameScreen active
+    if (document.getElementById("gameScreen") && document.getElementById("gameScreen").classList.contains("active")) {
+      renderCategoryCards();
+    }
   }
-  function endTurn(){ if(!gameActive||readingDelay||currentPlayerIndex!==0) showMessage("wait your turn"); else { drawCards(0,1); showMessage("📤 drew 1, turn ends"); advanceTurn(); renderGame(); } }
-  function sortHand(){ players[0].hand.sort((a,b)=> a.color.localeCompare(b.color) || a.iconName.localeCompare(b.iconName)); renderGame(); }
-  function showQuestionModal(card){ document.getElementById("modalIcon").textContent = card.iconSymbol; document.getElementById("modalLabelText").textContent = `${card.name} · ${card.iconName}`; document.getElementById("modalQuestion").textContent = card.question; document.getElementById("questionModal").classList.add("show"); speakText(card.question); setTimeout(()=> hideModal(), 11000); }
-  function showCurrentQuestionBig(){ if(lastQuestionCard) showQuestionModal(lastQuestionCard); else showMessage("no question yet — play one"); }
-  function closeQuestionModal(e){ if(e.target.id==="questionModal") hideModal(); }
-  function hideModal(){ document.getElementById("questionModal").classList.remove("show"); }
-  function speakText(t){ window.lastSpeech=t; if(audioEnabled && window.speechSynthesis){ let u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } }
-  function repeatSpeech(){ if(audioEnabled && window.lastSpeech) speakText(window.lastSpeech); else showMessage("enable voice in setup"); }
-  function toggleAudio(){ audioEnabled=!audioEnabled; document.getElementById("audioBtn").innerHTML=audioEnabled?"🔊 voice on":"🔇 voice off"; }
-  function toggleCountdown(){ countdownEnabled=!countdownEnabled; document.getElementById("countdownBtn").innerHTML=countdownEnabled?"⏱ count on":"⏱ count off"; }
-  function showMessage(txt){ document.getElementById("messageArea").textContent=txt; }
-  function startTimer(){ clearInterval(gameTimer); gameTimer=setInterval(()=>{ if(!gameActive) return; if(timeLeft<=0) endGame("⏰ time's up — great game"); else { timeLeft--; let m=Math.floor(timeLeft/60), s=timeLeft%60; document.getElementById("timer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; } },1000); }
-  function setRoundLength(){ timeLeft=parseInt(document.getElementById("timerSelect").value); let m=Math.floor(timeLeft/60), s=timeLeft%60; document.getElementById("timer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-  function toggleSettings(){ document.getElementById("settingsSheet").classList.toggle("show"); }
-  function applyPlayers(){ let names=document.getElementById("playerNamesInput").value.split(',').map(n=>n.trim()).filter(Boolean); if(names.length<2){ showMessage("need at least 2 players"); return; } initGame(names); toggleSettings(); }
-  function restartGame(){ let names=players.length?players.map(p=>p.name):["You","P2","P3","P4"]; initGame(names); toggleSettings(); }
-  function endGame(msg){ gameActive=false; clearInterval(gameTimer); showMessage(msg); document.getElementById("currentIcon").textContent="🏆"; document.getElementById("currentLabel").textContent="game finished"; document.getElementById("currentQuestion").textContent=msg; renderGame(); }
-  function renderGame(){
-    document.getElementById("directionLabel").innerHTML=direction===1?"↪":"↩";
-    document.getElementById("playersGrid").innerHTML=players.map((p,i)=>`<div class="player-pill ${currentPlayerIndex===i && gameActive?'active':''}"><div class="avatar">${playerAvatars[i%playerAvatars.length]}</div><div class="player-name">${p.name}</div><div class="player-count">${p.hand.length}</div></div>`).join('');
-    if(currentTopCard){ let colorMap={yellow:'#3a3520',blue:'#1f384b',green:'#1f3a2a',red:'#4a2626',dark:'#252b33'}; let previewDiv=document.getElementById("topCardPreview"); previewDiv.style.background=colorMap[currentTopCard.color]; previewDiv.style.color="#e6edf3"; previewDiv.innerHTML=`${currentTopCard.iconSymbol} ${currentTopCard.name}`; document.getElementById("matchRule").innerHTML=`${currentTopCard.color.toUpperCase()}<br>${currentTopCard.iconSymbol}`; }
-    let hand=players[0]?.hand||[]; let playableCount=hand.filter(canPlay).length; document.getElementById("handSubtitle").innerHTML=`${playableCount} playable · ${hand.length}`;
-    document.getElementById("cardsContainer").innerHTML=hand.map((c,i)=>`<div class="game-card ${c.bgClass} ${canPlay(c)?'playable':'not-playable'}" onclick="playCard(${i})"><div class="card-status">${canPlay(c)?'▶ PLAY':'⏸'}</div><div class="card-icon">${c.iconSymbol}</div><div class="card-name">${c.name}</div>${c.question?`<div class="card-question">❝ ${c.question} ❞</div>`:''}${c.effect?`<div class="card-effect">⚡ ${c.effect}</div>`:''}</div>`).join('');
+
+  // Render category cards (mobile stack)
+  function renderCategoryCards() {
+    const container = document.getElementById("categoriesContainer");
+    if (!container) return;
+    const categories = ["Positive", "Future", "Reflective", "Competitive"];
+    const t = translations[currentLanguage];
+    const categoryNames = {
+      Positive: t.positiveLabel,
+      Future: t.futureLabel,
+      Reflective: t.reflectiveLabel,
+      Competitive: t.competitiveLabel
+    };
+    const icons = {
+      Positive: "🌟",
+      Future: "🔮",
+      Reflective: "🪞",
+      Competitive: "⚡"
+    };
+    const borderClasses = {
+      Positive: "positive-border",
+      Future: "future-border",
+      Reflective: "reflective-border",
+      Competitive: "competitive-border"
+    };
+    const textColor = {
+      Positive: "positive-text",
+      Future: "future-text",
+      Reflective: "reflective-text",
+      Competitive: "competitive-text"
+    };
+    container.innerHTML = categories.map(cat => `
+      <div class="hidden-card-mobile ${borderClasses[cat]}" onclick="revealCategory('${cat}')">
+        <div class="card-icon-mobile">${icons[cat]}</div>
+        <div class="card-info">
+          <div class="card-category ${textColor[cat]}">${categoryNames[cat]}</div>
+          <div class="card-preview">${t.hiddenHint}</div>
+        </div>
+      </div>
+    `).join('');
   }
-  function initGame(names=["You","P2","P3","P4"]){
-    deck=buildDeck(); players=names.map((n,i)=>({id:i,name:n,hand:[]})); currentPlayerIndex=0; direction=1; gameActive=true; readingDelay=false; lastQuestionCard=null;
-    players.forEach((_,i)=>drawCards(i,5));
-    let first=deck.pop(); while(first?.action){ deck.unshift(first); first=deck.pop(); }
-    currentTopCard={ color:first.color, iconSymbol:first.iconSymbol, iconName:first.iconName, name:first.name, question:first.question||null };
-    if(first.question){ document.getElementById("currentIcon").textContent=first.iconSymbol; document.getElementById("currentLabel").textContent=`${first.name} · ${first.iconName}`; document.getElementById("currentQuestion").textContent=first.question; lastQuestionCard=first; }
-    else { document.getElementById("currentIcon").textContent=first.iconSymbol; document.getElementById("currentLabel").textContent=`${first.name} · start`; document.getElementById("currentQuestion").textContent="play a card to begin."; }
-    setRoundLength(); renderGame(); startTimer(); showMessage("✨ dark theme · playable cards have gold outline");
+
+  // REVEAL LOGIC (same as original)
+  let lastRevealedCategory = null;
+
+  function revealCategory(category) {
+    // play tiny haptic (just visual)
+    const questionText = getRandomQuestion(category);
+    lastRevealedCategory = category;
+    
+    // Store current question data to show in question screen
+    window.currentQuestionData = {
+      category: category,
+      question: questionText
+    };
+    
+    // Update question screen UI
+    const catDisplay = translations[currentLanguage][category.toLowerCase() + "Label"] || category;
+    document.getElementById("questionCatBadge").innerHTML = `${catDisplay}  ·  ${category}`;
+    document.getElementById("questionTextDisplay").innerText = questionText;
+    
+    // switch to question screen
+    document.getElementById("gameScreen").classList.remove("active");
+    document.getElementById("questionScreen").classList.add("active");
+    
+    // subtle vibration if supported
+    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
   }
-  initGame();
+
+  // Back to categories (from question)
+  function backToCategories() {
+    document.getElementById("questionScreen").classList.remove("active");
+    document.getElementById("gameScreen").classList.add("active");
+    // re-render categories to reset any dynamic labels (optional)
+    renderCategoryCards();
+  }
+
+  // Next random category: pick random category and reveal new question
+  function nextRandomCategory() {
+    const categoriesList = ["Positive", "Future", "Reflective", "Competitive"];
+    let newCategory = categoriesList[Math.floor(Math.random() * categoriesList.length)];
+    // avoid same as last? fine either way
+    const newQuestion = getRandomQuestion(newCategory);
+    lastRevealedCategory = newCategory;
+    window.currentQuestionData = {
+      category: newCategory,
+      question: newQuestion
+    };
+    const catDisplay = translations[currentLanguage][newCategory.toLowerCase() + "Label"] || newCategory;
+    document.getElementById("questionCatBadge").innerHTML = `${catDisplay}  ·  ${newCategory}`;
+    document.getElementById("questionTextDisplay").innerText = newQuestion;
+    
+    // add small animation
+    const cardDiv = document.querySelector(".question-card-big");
+    if (cardDiv) {
+      cardDiv.style.animation = "none";
+      setTimeout(() => cardDiv.style.animation = "floatUp 0.35s ease", 5);
+    }
+    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(30);
+  }
+
+  // Exit functions
+  function goToGuideFromGame() {
+    document.getElementById("gameScreen").classList.remove("active");
+    document.getElementById("guideScreen").classList.add("active");
+    updateUITexts();
+  }
+  function fullExitToGuide() {
+    document.getElementById("questionScreen").classList.remove("active");
+    document.getElementById("guideScreen").classList.add("active");
+    updateUITexts();
+  }
+  function startGame() {
+    document.getElementById("guideScreen").classList.remove("active");
+    document.getElementById("gameScreen").classList.add("active");
+    renderCategoryCards();
+    // ensure subtitle text matches current language
+    const t = translations[currentLanguage];
+    if (document.getElementById("gameSubtitle")) document.getElementById("gameSubtitle").innerText = t.gameSubtitle;
+  }
+
+  // Language switcher
+  function setLanguage(lang) {
+    currentLanguage = lang;
+    updateUITexts();
+    // If currently on game screen, re-render
+    if (document.getElementById("gameScreen").classList.contains("active")) {
+      renderCategoryCards();
+    }
+    // Also if question screen is active, update badge texts (category badge)
+    if (document.getElementById("questionScreen").classList.contains("active") && window.currentQuestionData) {
+      const cat = window.currentQuestionData.category;
+      const catDisplay = translations[currentLanguage][cat.toLowerCase() + "Label"] || cat;
+      document.getElementById("questionCatBadge").innerHTML = `${catDisplay}  ·  ${cat}`;
+      // keep question text same
+    }
+  }
+
+  // attach functions to global scope for inline handlers
+  window.setLanguage = setLanguage;
+  window.startGame = startGame;
+  window.goToGuideFromGame = goToGuideFromGame;
+  window.fullExitToGuide = fullExitToGuide;
+  window.backToCategories = backToCategories;
+  window.revealCategory = revealCategory;
+  window.nextRandomCategory = nextRandomCategory;
+  
+  // Initial render
+  updateUITexts();
+  renderCategoryCards(); // preload container but hidden until game starts
+  
+  // preload any placeholder
+  window.currentQuestionData = null;
 </script>
 </body>
 </html>
